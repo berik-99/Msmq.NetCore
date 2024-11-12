@@ -1,28 +1,48 @@
-# What is MSMQ.Messaging
+# 🌐 NetCore.Msmq
 
-MSMQ.Messaging is intended to be a straight port of the .NET Framework's System.Messaging assembly to .NET Core, based on the [reference source](https://github.com/microsoft/referencesource).  Since MSMQ is platform specific, it will only run on Windows, and should work with .NET Standard 1.6 or .NET Framework 4.6.1 and up.  I originally created this project so that I could move legacy code to .NET Core, and it has only been tested with relatively simple use-cases.  
+**NetCore.Msmq** is an updated fork of **MSMQ.Messaging**, intended as a drop-in replacement for **System.Messaging** in .NET Core. Thanks to the original project, we've created this version with support for the latest .NET technologies. 🎉
 
-I'm not doing development on MSMQ.Messaging, it's only here so I can use .NET Core on some legacy applications.   
+> **Note**: NetCore.Msmq is compatible only with **.NET Standard 2.1** (Windows-only). For applications targeting .NET Framework, it is recommended to use **System.Messaging** instead.
 
-## Getting Started
+## 🙏 Acknowledgments
 
-You can use this from [NuGet](https://www.nuget.org/packages/MSMQ.Messaging/), or build directly.  Requires .NET Standard 1.6 or .NET Framework 4.6.1, and will run on Windows only.
+A big thanks to **MSMQ.Messaging** for laying the foundation for this project. This fork was developed to address the needs of those looking to upgrade legacy applications, keeping the simplicity of the original project while incorporating support for newer .NET versions.
 
-It should be pretty straightforward: clone the source and dotnet build it. There's also a .sln file for use with Visual Studio 2019.  
+## 🚀 Getting Started
 
-1. MSMQ.Messaging relies on mqrt.dll to do the work, so while it will run on .NET Core, it will only do so on Windows.
-2. All but the installation *should* work at this point, but test coverage is limited right now.
-3. Configuring queues may or may not work, I don't know -- use cases I have don't require them.
-4. API references -- [System.Messaging docs](https://docs.microsoft.com/en-us/dotnet/api/system.messaging?view=netframework-4.8) for classic .NET Framework should work for you, I have no intention of adding/changing any behavior.  I'm not an MSMQ person, I just want to be able to move some code that relies on MSMQ from the .NET Framework to .NET Core.  
+### Installation
 
-## Upgrading .NET Framework projects
+You can install **NetCore.Msmq** directly from [NuGet](https://www.nuget.org/packages/MSMQ.Messaging/), or clone and build the project manually.
 
-MSMQ.Messaging is intended to be simple to use if you are replacing System.Messaging code.  You should only have to change the references and change System.Messaging to MSMQ.Messaging in your usings section.  Everything else should remain the same.  Note that I have removed the winforms code, since you'll still be able to edit queues &etc using System.Messaging; MSMQ Messaging is intended to upgrade your old code, not provide a management interface to create/edit queues. (You can still create queues with code, only the dialog boxes were removed.)
+### Build Instructions
 
-## Build and Test
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/NetCore.Msmq.git
+   ```
+2. Navigate to the source folder and build the project or open .sln file in Visual Studio:
+   ```bash
+   cd NetCore.Msmq/Sources
+   dotnet build
+   ```
 
-Should be a simple clone and build, I have been using Visual Studio 2019.
+## 📝 Important Notes
 
-## Contribute
+1. **NetCore.Msmq** relies on `mqrt.dll`, so it will only work on Windows.
+2. Queue configuration and MSMQ installation should work, but test coverage might be limited.
+3. The API is compatible with the documentation for [System.Messaging](https://docs.microsoft.com/en-us/dotnet/api/system.messaging?view=netframework-4.8) in the classic .NET Framework.
 
-I am overjoyed that people are using this, but I am intentionally leaving it as close to the reference source as possible.  If you want to do something cool, please fork the code and have at it, but I don't expect to update this repo unless it stops working.
+## 🔄 Upgrading .NET Framework Projects
+
+**NetCore.Msmq** is designed to be easy to use as a replacement for **System.Messaging** in .NET Core projects. To update legacy code, you only need to:
+
+1. Change the reference from `System.Messaging` to `NetCore.Msmq`.
+2. Update `using` statements from `System.Messaging` to `NetCore.Msmq`.
+
+All other code should remain the same. 🌟
+
+## 💡 Contributing
+
+We're thrilled that you'd like to contribute! 🎉 This fork preserves the base architecture of **MSMQ.Messaging**, so we encourage anyone looking to extend functionality to create their own fork. If you have improvements that benefit everyone, feel free to open a pull request.
+
+---

@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<LangVersion>Latest</LangVersion>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<AssemblyName>NetCore.Msmq</AssemblyName>
+		<Version>1.1.0</Version>
+		<Description>A drop-in replacement for System.Messaging on .NET Core (forked from MSMQ.Messaging)</Description>
+		<Authors>Erik Barale</Authors>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/weloytty/MSMQ.Messaging</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/weloytty/MSMQ.Messaging</RepositoryUrl>
+		<PackageTags>MSMQ, System.Messaging, MSMQ.Messaging</PackageTags>
+		<AssemblyVersion>1.1.0.0</AssemblyVersion>
+		<FileVersion>1.1.0.0</FileVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="System.DirectoryServices" Version="8.0.0" />
+		<PackageReference Include="System.Security.Permissions" Version="8.0.0" />
+	</ItemGroup>
+
+</Project>

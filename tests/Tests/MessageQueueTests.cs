@@ -1,105 +1,102 @@
 ﻿using System;
-using MSMQ.Messaging;
+using NetCore.Msmq.Messaging;
 using Xunit;
 
-namespace MSMQ.Messaging.Tests
+namespace MSMQ.Messaging.Tests;
+
+public class MessageQueueTests
 {
-    public class MessageQueueTests
-    {
-        public MessageQueueTests()
-        {
-            if (!MessageQueue.Exists(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE))
-            {
-                using var mq = MessageQueue.Create(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE, true);
+	public MessageQueueTests()
+	{
+		if (!MessageQueue.Exists(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE))
+		{
+			using var mq = MessageQueue.Create(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE, true);
+		}
 
-            }
+		if (!MessageQueue.Exists(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE))
+		{
+			using var mq = MessageQueue.Create(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE);
+		}
 
-            if (!MessageQueue.Exists(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE))
-            {
-                using var mq = MessageQueue.Create(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE);
-            }
+		if (!MessageQueue.Exists(TestCommon.TEST_ADMIN_QUEUE))
+		{
+			using var mq = MessageQueue.Create(TestCommon.TEST_ADMIN_QUEUE);
+		}
+	}
 
-            if (!MessageQueue.Exists(TestCommon.TEST_ADMIN_QUEUE))
-            {
-                using var mq = MessageQueue.Create(TestCommon.TEST_ADMIN_QUEUE);
-            }
-        }
-        
-        [Fact()]
-        public void CreateTest()
-        {
-            var queueName = $".\\private$\\{Guid.NewGuid():N}";
-            Assert.False(MessageQueue.Exists(queueName));
+	[Fact]
+	public void CreateTest()
+	{
+		var queueName = $".\\private$\\{Guid.NewGuid():N}";
+		Assert.False(MessageQueue.Exists(queueName));
 
-            using MessageQueue mq = MessageQueue.Create(queueName);
-            Assert.NotNull(mq);
-            Assert.IsType<MessageQueue>(mq);
-            Assert.True(MessageQueue.Exists(queueName));
-            MessageQueue.Delete(queueName);
-            Assert.False(MessageQueue.Exists(queueName));
-        }
+		using MessageQueue mq = MessageQueue.Create(queueName);
+		Assert.NotNull(mq);
+		Assert.IsType<MessageQueue>(mq);
+		Assert.True(MessageQueue.Exists(queueName));
+		MessageQueue.Delete(queueName);
+		Assert.False(MessageQueue.Exists(queueName));
+	}
 
-        [Fact()]
-        public void ReceiveTest()
-        {
-            SendTest();
-            using var mq = new MessageQueue(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE)
-            {
-                Formatter = new XmlMessageFormatter(new Type[] { typeof(string) })
-            };
-            var msg = mq.Receive();
-            Assert.Equal(msg.Body, TestCommon.TEST_MESSAGE_BODY);
-        }
-        
-        [Fact()]
-        public void ReceiveByCorrelationIdTest()
-        {
-            
-            using MessageQueue queue = new MessageQueue(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE);
-            Message msg = new Message("Example Message Body");
+	[Fact]
+	public void ReceiveTest()
+	{
+		SendTest();
+		using var mq = new MessageQueue(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE)
+		{
+			Formatter = new XmlMessageFormatter(new Type[] { typeof(string) })
+		};
+		var msg = mq.Receive();
+		Assert.Equal(msg.Body, TestCommon.TEST_MESSAGE_BODY);
+	}
 
-            queue.Send(msg, "Example Message Label");
+	[Fact]
+	public void ReceiveByCorrelationIdTest()
+	{
+		using MessageQueue queue = new MessageQueue(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE);
+		Message msg = new Message("Example Message Body");
 
-            string id = msg.Id;
+		queue.Send(msg, "Example Message Label");
 
-            msg = queue.ReceiveById(id, TimeSpan.FromSeconds(10.0));
+		string id = msg.Id;
 
-            using MessageQueue transQueue = new MessageQueue(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE);
-            Message responseMsg = new Message("Example Response Message Body") { CorrelationId = id };
+		msg = queue.ReceiveById(id, TimeSpan.FromSeconds(10.0));
 
-            transQueue.Send(responseMsg, "Example Response Message Label",
-                MessageQueueTransactionType.Single);
+		using MessageQueue transQueue = new MessageQueue(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE);
+		Message responseMsg = new Message("Example Response Message Body") { CorrelationId = id };
 
-            // Set the transactional queue's MessageReadPropertyFilter property to
-            // ensure that the response message includes the desired properties.
-            transQueue.MessageReadPropertyFilter.CorrelationId = true;
+		transQueue.Send(responseMsg, "Example Response Message Label",
+			MessageQueueTransactionType.Single);
 
-            // Receive the response message from the transactional queue.
-            responseMsg = transQueue.ReceiveByCorrelationId(id,
-                TimeSpan.FromSeconds(10.0), MessageQueueTransactionType.Single);
+		// Set the transactional queue's MessageReadPropertyFilter property to
+		// ensure that the response message includes the desired properties.
+		transQueue.MessageReadPropertyFilter.CorrelationId = true;
 
-            // Display the response message's property values.
-            Assert.True(responseMsg.CorrelationId == msg.Id);
-            msg.Dispose();
+		// Receive the response message from the transactional queue.
+		responseMsg = transQueue.ReceiveByCorrelationId(id,
+			TimeSpan.FromSeconds(10.0), MessageQueueTransactionType.Single);
 
-            responseMsg.Dispose();
-        }
+		// Display the response message's property values.
+		Assert.True(responseMsg.CorrelationId == msg.Id);
+		msg.Dispose();
 
-        [Fact()]
-        public void SendTest()
-        {
-            using var mq = new MessageQueue(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE);
-            if (mq.Transactional)
-            {
-                using var msgTransaction = new MessageQueueTransaction();
-                msgTransaction.Begin();
-                mq.Send(TestCommon.TEST_MESSAGE_BODY, msgTransaction);
-                msgTransaction.Commit();
-            }
-            else
-            {
-                mq.Send(TestCommon.TEST_MESSAGE_BODY);
-            }
-        }
-    }
+		responseMsg.Dispose();
+	}
+
+	[Fact]
+	public void SendTest()
+	{
+		using var mq = new MessageQueue(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE);
+		if (mq.Transactional)
+		{
+			using var msgTransaction = new MessageQueueTransaction();
+			msgTransaction.Begin();
+			mq.Send(TestCommon.TEST_MESSAGE_BODY, msgTransaction);
+			msgTransaction.Commit();
+		}
+		else
+		{
+			mq.Send(TestCommon.TEST_MESSAGE_BODY);
+		}
+	}
 }

@@ -5,3 +5,4 @@
 
 using System.Diagnostics.CodeAnalysis;
 
+[assembly: SuppressMessage("Roslynator", "RCS1059:Avoid locking on publicly accessible instance", Justification = "<Pending>", Scope = "member", Target = "~M:NetCore.Msmq.Messaging.Message.AdjustToSend")]
