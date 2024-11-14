@@ -2,7 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace NetCore.Msmq.Messaging.Interop;
+namespace Msmq.NetCore.Messaging.Interop;
 
 using UnmanagedType = UnmanagedType;
 

@@ -1,5 +1,3 @@
-using NetCore.Msmq;
-using NetCore.Msmq.Messaging;
 using System;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
@@ -7,7 +5,7 @@ using System.Security;
 using System.Text;
 using System.Threading;
 
-namespace NetCore.Msmq.Messaging.Interop;
+namespace Msmq.NetCore.Messaging.Interop;
 
 [ComVisible(false),
 SuppressUnmanagedCodeSecurity]

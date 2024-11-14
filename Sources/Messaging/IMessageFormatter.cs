@@ -1,8 +1,8 @@
 using System;
 using System.ComponentModel;
-using NetCore.Msmq.Messaging.Design;
+using Msmq.NetCore.Messaging.Design;
 
-namespace NetCore.Msmq.Messaging;
+namespace Msmq.NetCore.Messaging;
 
 [TypeConverter(typeof(MessageFormatterConverter))]
 public interface IMessageFormatter : ICloneable

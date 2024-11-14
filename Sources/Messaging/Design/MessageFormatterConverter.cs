@@ -1,4 +1,3 @@
-using NetCore.Msmq.Messaging;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
@@ -6,7 +5,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters;
 
-namespace NetCore.Msmq.Messaging.Design;
+namespace Msmq.NetCore.Messaging.Design;
 
 /// <include file='..\..\..\doc\MessageFormatterConverter.uex' path='docs/doc[@for="MessageFormatterConverter"]/*' />
 /// <internalonly/>

@@ -1,7 +1,7 @@
 
 using System;
 
-namespace NetCore.Msmq.Messaging.Interop;
+namespace Msmq.NetCore.Messaging.Interop;
 
 using Microsoft.Win32.SafeHandles;
 

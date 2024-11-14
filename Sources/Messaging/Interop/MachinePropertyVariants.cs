@@ -1,4 +1,4 @@
-namespace NetCore.Msmq.Messaging.Interop;
+namespace Msmq.NetCore.Messaging.Interop;
 
 internal class MachinePropertyVariants : MessagePropertyVariants
 {

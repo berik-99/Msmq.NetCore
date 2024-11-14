@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 
-namespace NetCore.Msmq.Messaging;
+namespace Msmq.NetCore.Messaging;
 
 [Serializable]
 public class MessageQueuePermissionEntryCollection : CollectionBase

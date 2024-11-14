@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-using NetCore.Msmq.Messaging.Interop;
+using Msmq.NetCore.Messaging.Interop;
 
-namespace NetCore.Msmq.Messaging;
+namespace Msmq.NetCore.Messaging;
 
 public class MessageEnumerator : MarshalByRefObject, IEnumerator, IDisposable
 {

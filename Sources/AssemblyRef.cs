@@ -1,4 +1,4 @@
-﻿namespace NetCore.Msmq;
+﻿namespace Msmq.NetCore;
 
 internal static class AssemblyRef
 {

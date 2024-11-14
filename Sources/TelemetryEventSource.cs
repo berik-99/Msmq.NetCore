@@ -1,7 +1,7 @@
 using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 
-namespace NetCore.Msmq;
+namespace Msmq.NetCore;
 
 //so do I leave this the way it is for System.Messaging, or change it to something new?
 

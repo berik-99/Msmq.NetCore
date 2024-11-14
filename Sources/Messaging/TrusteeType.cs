@@ -1,4 +1,4 @@
-namespace NetCore.Msmq.Messaging;
+namespace Msmq.NetCore.Messaging;
 
 public enum TrusteeType
 {

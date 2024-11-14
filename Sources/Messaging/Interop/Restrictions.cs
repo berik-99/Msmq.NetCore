@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace NetCore.Msmq.Messaging.Interop;
+namespace Msmq.NetCore.Messaging.Interop;
 
 internal class Restrictions
 {

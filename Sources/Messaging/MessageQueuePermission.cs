@@ -11,7 +11,7 @@ using System.Security;
 using System.Security.Permissions;
 using System.Text;
 
-namespace NetCore.Msmq.Messaging;
+namespace Msmq.NetCore.Messaging;
 
 [Serializable]
 public sealed class MessageQueuePermission : CodeAccessPermission, IUnrestrictedPermission

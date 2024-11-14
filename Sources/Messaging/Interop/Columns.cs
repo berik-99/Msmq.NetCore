@@ -1,9 +1,8 @@
-using NetCore.Msmq.Messaging;
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
-namespace NetCore.Msmq.Messaging.Interop;
+namespace Msmq.NetCore.Messaging.Interop;
 
 internal class Columns
 {

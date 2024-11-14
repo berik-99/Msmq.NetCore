@@ -1,8 +1,7 @@
 ﻿using System.Xml.Linq;
-using NetCore.Msmq.Messaging;
-using Xunit;
+using Msmq.NetCore.Messaging;
 
-namespace MSMQ.Messaging.Tests;
+namespace Msmq.NetCore.Test.Tests;
 
 public class MessageTests
 {

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.IO;
 using System.Runtime.InteropServices;
 
-namespace MSMQ.Messaging;
+namespace Msmq.NetCore.Test;
 
 [Serializable]
 public enum MaritalStatus

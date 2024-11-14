@@ -3,7 +3,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
 
-namespace NetCore.Msmq.Messaging.Design;
+namespace Msmq.NetCore.Messaging.Design;
 
 /// <include file='..\..\..\doc\MessageQueueConverter.uex' path='docs/doc[@for="MessageQueueConverter"]/*' />
 /// <internalonly/>

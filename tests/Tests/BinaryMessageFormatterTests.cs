@@ -1,11 +1,7 @@
-﻿using NetCore.Msmq.Messaging;
-using System;
+﻿using Msmq.NetCore.Messaging;
 using System.Drawing;
-using System.IO;
-using System.Net.Mime;
-using Xunit;
 
-namespace MSMQ.Messaging.Tests;
+namespace Msmq.NetCore.Test.Tests;
 
 public class BinaryMessageFormatterTests
 {
@@ -30,11 +26,11 @@ public class BinaryMessageFormatterTests
 		Assert.True(true);
 	}
 
-	internal static byte[] ConvertStreamToByteArray(System.IO.Stream input)
+	internal static byte[] ConvertStreamToByteArray(Stream input)
 	{
 		byte[] buffer = new byte[16 * 1024];
 
-		using System.IO.MemoryStream ms = new System.IO.MemoryStream();
+		using MemoryStream ms = new MemoryStream();
 		int chunk;
 
 		while ((chunk = input.Read(buffer, 0, buffer.Length)) > 0)

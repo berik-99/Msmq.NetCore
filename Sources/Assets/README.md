@@ -1,8 +1,8 @@
-# NetCore.Msmq
+# Msmq.NetCore
 
-[![NuGet](https://img.shields.io/nuget/v/NetCore.Msmq.svg)](https://www.nuget.org/packages/NetCore.Msmq)
+[![NuGet](https://img.shields.io/nuget/v/Msmq.NetCore.svg)](https://www.nuget.org/packages/Msmq.NetCore)
 
-**NetCore.Msmq** is a drop-in replacement for `System.Messaging` on .NET Core, providing access to the features of MSMQ on the latest .NET Core runtime. This library is a fork of the original `MSMQ.Messaging` project and has been updated to support .NET Standard 2.1.
+**Msmq.NetCore** is a drop-in replacement for `System.Messaging` on .NET Core, providing access to the features of MSMQ on the latest .NET Core runtime. This library is a fork of the original `MSMQ.Messaging` project and has been updated to support .NET Standard 2.1.
 
 > **Note**: This project is intended for use with .NET Core only. For .NET Framework users, it is recommended to continue using `System.Messaging`.
 
@@ -14,26 +14,26 @@
 
 ## Installation
 
-You can install `NetCore.Msmq` via [NuGet](https://www.nuget.org/packages/NetCore.Msmq/):
+You can install `Msmq.NetCore` via [NuGet](https://www.nuget.org/packages/Msmq.NetCore/):
 
 ```
-Install-Package NetCore.Msmq
+Install-Package Msmq.NetCore
 ```
 
 Alternatively, you can manually add the package to your project file:
 
 ```
-<PackageReference Include="NetCore.Msmq" Version="1.1.0" />
+<PackageReference Include="Msmq.NetCore" Version="1.1.0" />
 ```
 
 ## Usage
 
 ### Basic Example
 
-To start using `NetCore.Msmq`, you can replace `System.Messaging` with `NetCore.Msmq` in your project. Here's an example of how to send and receive messages:
+To start using `Msmq.NetCore`, you can replace `System.Messaging` with `Msmq.NetCore` in your project. Here's an example of how to send and receive messages:
 
 ```
-using NetCore.Msmq;
+using Msmq.NetCore;
 
 var queuePath = @".\Private$\MyQueue";
 
@@ -66,7 +66,7 @@ using (var queue = new MessageQueue(queuePath))
 
 ## Contributing
 
-Contributions are welcome! If you'd like to contribute to `NetCore.Msmq`, please fork the repository and submit a pull request. 
+Contributions are welcome! If you'd like to contribute to `Msmq.NetCore`, please fork the repository and submit a pull request. 
 
 We ask that you respect the project's goal of staying as close as possible to the reference implementation of MSMQ, with the aim of providing a simple migration path to .NET Core.
 

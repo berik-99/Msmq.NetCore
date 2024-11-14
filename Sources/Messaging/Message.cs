@@ -5,11 +5,10 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using NetCore.Msmq;
-using NetCore.Msmq.Messaging.Design;
-using NetCore.Msmq.Messaging.Interop;
+using Msmq.NetCore.Messaging.Design;
+using Msmq.NetCore.Messaging.Interop;
 
-namespace NetCore.Msmq.Messaging;
+namespace Msmq.NetCore.Messaging;
 
 [Designer("System.Messaging.Design.MessageDesigner, " + AssemblyRef.SystemDesign)]
 public class Message : Component

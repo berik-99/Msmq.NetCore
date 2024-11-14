@@ -1,10 +1,8 @@
-using NetCore.Msmq;
-using NetCore.Msmq.Messaging;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
-namespace NetCore.Msmq.Messaging.Interop;
+namespace Msmq.NetCore.Messaging.Interop;
 
 [ComVisible(false),
 SuppressMessage("CodeQuality", "IDE0051:Remove unused private members")]

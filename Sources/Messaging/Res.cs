@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Resources;
 using System.Threading;
 
-namespace NetCore.Msmq.Messaging;
+namespace Msmq.NetCore.Messaging;
 
 internal sealed class Res
 {

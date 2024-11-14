@@ -5,9 +5,9 @@ using System.Collections;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Text;
-using NetCore.Msmq.Messaging.Interop;
+using Msmq.NetCore.Messaging.Interop;
 
-namespace NetCore.Msmq.Messaging;
+namespace Msmq.NetCore.Messaging;
 
 public class AccessControlList : CollectionBase
 {

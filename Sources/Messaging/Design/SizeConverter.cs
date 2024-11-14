@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Globalization;
 
-namespace NetCore.Msmq.Messaging.Design;
+namespace Msmq.NetCore.Messaging.Design;
 
 /// <include file='..\..\..\doc\SizeConverter.uex' path='docs/doc[@for="SizeConverter"]/*' />
 internal class SizeConverter : TypeConverter

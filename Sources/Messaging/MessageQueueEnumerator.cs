@@ -3,9 +3,9 @@ using System;
 using System.Collections;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using NetCore.Msmq.Messaging.Interop;
+using Msmq.NetCore.Messaging.Interop;
 
-namespace NetCore.Msmq.Messaging;
+namespace Msmq.NetCore.Messaging;
 
 public class MessageQueueEnumerator : MarshalByRefObject, IEnumerator, IDisposable
 {

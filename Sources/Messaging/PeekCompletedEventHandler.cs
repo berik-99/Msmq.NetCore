@@ -1,3 +1,3 @@
-namespace NetCore.Msmq.Messaging;
+namespace Msmq.NetCore.Messaging;
 
 public delegate void PeekCompletedEventHandler(object sender, PeekCompletedEventArgs e);

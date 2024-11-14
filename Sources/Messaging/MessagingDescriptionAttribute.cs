@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Security.Permissions;
 
-namespace NetCore.Msmq.Messaging;
+namespace Msmq.NetCore.Messaging;
 
 [AttributeUsage(AttributeTargets.All)]
 public class MessagingDescriptionAttribute : DescriptionAttribute

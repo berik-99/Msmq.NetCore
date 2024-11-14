@@ -1,4 +1,4 @@
-﻿using NetCore.Msmq.Messaging;
+﻿using Msmq.NetCore.Messaging;
 
 string QueuePath = @".\private$\TestQueue";
 

@@ -1,9 +1,8 @@
-using NetCore.Msmq.Messaging;
 using System;
 using System.ComponentModel;
 using System.Globalization;
 
-namespace NetCore.Msmq.Messaging.Design;
+namespace Msmq.NetCore.Messaging.Design;
 
 /// <include file='..\..\..\doc\TimeoutConverter.uex' path='docs/doc[@for="TimeoutConverter"]/*' />
 /// <devdoc>

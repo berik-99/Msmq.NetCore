@@ -1,6 +1,4 @@
-﻿using Xunit;
-
-namespace MSMQ.Messaging.Tests;
+﻿namespace Msmq.NetCore.Test.Tests;
 
 public class ActiveXMessageFormatterTests
 {
