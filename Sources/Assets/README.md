@@ -12,20 +12,6 @@
 - **Fork of MSMQ.Messaging**: Built on the foundation of the original project, updated for modern .NET technologies.
 - **Simple Integration**: Drop-in replacement for the legacy `System.Messaging` namespace, making it easy to migrate to .NET Core.
 
-## Installation
-
-You can install `Msmq.NetCore` via [NuGet](https://www.nuget.org/packages/Msmq.NetCore/):
-
-```
-Install-Package Msmq.NetCore
-```
-
-Alternatively, you can manually add the package to your project file:
-
-```
-<PackageReference Include="Msmq.NetCore" Version="1.1.0" />
-```
-
 ## Usage
 
 ### Basic Example
@@ -76,4 +62,4 @@ This project is a **fork** of [MSMQ.Messaging](https://github.com/weloytty/MSMQ.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](../LICENSE).

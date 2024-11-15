@@ -5,18 +5,18 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<AssemblyName>Msmq.NetCore</AssemblyName>
 		<PackageId>Msmq.NetCore</PackageId>
-		<Version>1.1.0</Version>
+		<Version>1.1.1</Version>
 		<Description>A drop-in replacement for System.Messaging on .NET Core (forked from MSMQ.Messaging)</Description>
 		<Authors>Erik Barale, Bill Loytty</Authors>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/berik-99/Msmq.NetCore</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/berik-99/Msmq.NetCore</RepositoryUrl>
 		<PackageTags>MSMQ, System.Messaging, MSMQ.Messaging</PackageTags>
-		<AssemblyVersion>1.1.0.0</AssemblyVersion>
-		<FileVersion>1.1.0.0</FileVersion>
+		<AssemblyVersion>1.1.1.0</AssemblyVersion>
+		<FileVersion>1.1.1.0</FileVersion>
 		<PackageIcon>icon.png</PackageIcon>
 		<RepositoryType>git</RepositoryType>
-		<PackageReleaseNotes>Updated for .NET Standard 2.1 and .NET Core compatibility.</PackageReleaseNotes>
+		<PackageReleaseNotes>Updated to .NET 9</PackageReleaseNotes>
 		<Authors>Erik Barale</Authors>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageOutputPath>../Nuget/$(Configuration)/</PackageOutputPath>
