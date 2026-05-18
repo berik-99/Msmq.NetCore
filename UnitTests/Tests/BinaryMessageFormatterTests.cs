@@ -8,8 +8,16 @@ public class BinaryMessageFormatterTests
 	private const string TEST_IMAGE = "assets/ironing a kitten.jpg";
 
 	[Fact]
+	[System.Runtime.Versioning.SupportedOSPlatform("windows")]
 	public void BinaryMessageFormatterTest()
 	{
+		if (!OperatingSystem.IsWindows())
+			return;
+
+#if NET9_0_OR_GREATER
+		// BinaryFormatter has been removed in .NET 9+, so this test cannot run on this runtime.
+		return;
+#endif
 		Assert.True(File.Exists(TEST_IMAGE), "Can't find binary file to test.");
 
 		Image thisImage = Image.FromFile(TEST_IMAGE);
