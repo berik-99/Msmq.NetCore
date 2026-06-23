@@ -78,11 +78,11 @@ public class MessageQueueEnumerator : MarshalByRefObject, IEnumerator, IDisposab
 
 				if (checkSecurity)
 				{
-					MessageQueuePermission permission = new MessageQueuePermission(MessageQueuePermissionAccess.Browse, MessageQueuePermission.Any);
+					MessageQueuePermission permission = new(MessageQueuePermissionAccess.Browse, MessageQueuePermission.Any);
 					permission.Demand();
 				}
 
-				Columns columns = new Columns(2);
+				Columns columns = new(2);
 				LocatorHandle enumHandle;
 				columns.AddColumnId(NativeMethods.QUEUE_PROPID_PATHNAME);
 				//Adding the instance property avoids accessing the DS a second

@@ -15,5 +15,5 @@ public class PeekCompletedEventArgs : EventArgs
 
 	public IAsyncResult AsyncResult { get; set; }
 
-	public Message Message => message ?? (message = sender.EndPeek(AsyncResult));
+	public Message Message => message ??= sender.EndPeek(AsyncResult);
 }

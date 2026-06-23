@@ -19,7 +19,7 @@ public class AccessControlList : CollectionBase
 	// Double-checked locking pattern requires volatile for read/write synchronization
 	private static volatile int environment = UnknownEnvironment;
 
-	private static readonly object staticLock = new object();
+	private static readonly object staticLock = new();
 
 	internal static int CurrentEnvironment
 	{
@@ -31,7 +31,7 @@ public class AccessControlList : CollectionBase
 				{
 					if (environment == UnknownEnvironment)
 					{
-						EnvironmentPermission environmentPermission = new EnvironmentPermission(PermissionState.Unrestricted);
+						EnvironmentPermission environmentPermission = new(PermissionState.Unrestricted);
 						environmentPermission.Assert();
 						try
 						{
@@ -134,7 +134,7 @@ public class AccessControlList : CollectionBase
 
 				entries[i].data = Marshal.AllocHGlobal(sidSize);
 
-				StringBuilder domainName = new StringBuilder(domainSize);
+				StringBuilder domainName = new(domainSize);
 				if (!UnsafeNativeMethods.LookupAccountName(ace.Trustee.SystemName, name, entries[i].data, ref sidSize, domainName, ref domainSize, out sidtype))
 					throw new InvalidOperationException(Res.GetString(Res.CouldntResolveName, ace.Trustee.Name));
 

@@ -54,7 +54,7 @@ public class AccessControlEntry
 			if ((value & genericRightsMask) != value)
 				throw new InvalidEnumArgumentException("value", (int)value, typeof(GenericAccessRights));
 
-			accessFlags = accessFlags & (int)~genericRightsMask | (int)value;
+			accessFlags = (accessFlags & (int)~genericRightsMask) | (int)value;
 		}
 	}
 
@@ -67,7 +67,7 @@ public class AccessControlEntry
 			if ((value & standardRightsMask) != value)
 				throw new InvalidEnumArgumentException("value", (int)value, typeof(StandardAccessRights));
 
-			accessFlags = accessFlags & (int)~standardRightsMask | (int)value;
+			accessFlags = (accessFlags & (int)~standardRightsMask) | (int)value;
 		}
 	}
 

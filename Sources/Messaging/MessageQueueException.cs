@@ -41,7 +41,7 @@ public class MessageQueueException : ExternalException, ISerializable
 		//get the system error message...
 		string errorMsg = "";
 
-		StringBuilder sb = new StringBuilder(256);
+		StringBuilder sb = new(256);
 		int result = SafeNativeMethods.FormatMessage(SafeNativeMethods.FORMAT_MESSAGE_IGNORE_INSERTS |
 								   SafeNativeMethods.FORMAT_MESSAGE_FROM_SYSTEM |
 								   SafeNativeMethods.FORMAT_MESSAGE_ARGUMENT_ARRAY,

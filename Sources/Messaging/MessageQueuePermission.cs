@@ -29,13 +29,13 @@ public sealed class MessageQueuePermission : CodeAccessPermission, IUnrestricted
 
 	public MessageQueuePermission(MessageQueuePermissionAccess permissionAccess, string path)
 	{
-		MessageQueuePermissionEntry entry = new MessageQueuePermissionEntry(permissionAccess, path);
+		MessageQueuePermissionEntry entry = new(permissionAccess, path);
 		PermissionEntries.Add(entry);
 	}
 
 	public MessageQueuePermission(MessageQueuePermissionAccess permissionAccess, string machineName, string label, string category)
 	{
-		MessageQueuePermissionEntry entry = new MessageQueuePermissionEntry(permissionAccess, machineName, label, category);
+		MessageQueuePermissionEntry entry = new(permissionAccess, machineName, label, category);
 		PermissionEntries.Add(entry);
 	}
 
@@ -69,7 +69,7 @@ public sealed class MessageQueuePermission : CodeAccessPermission, IUnrestricted
 						else
 							path = "FORMATNAME:" + formatName;
 
-						MessageQueuePermissionEntry entry = new MessageQueuePermissionEntry(
+						MessageQueuePermissionEntry entry = new(
 																					(MessageQueuePermissionAccess)resolvedReference[formatName],
 																					 path);
 						innerCollection.Add(entry);
@@ -95,7 +95,7 @@ public sealed class MessageQueuePermission : CodeAccessPermission, IUnrestricted
 
 	public override IPermission Copy()
 	{
-		MessageQueuePermission permission = new MessageQueuePermission { isUnrestricted = isUnrestricted };
+		MessageQueuePermission permission = new() { isUnrestricted = isUnrestricted };
 		foreach (MessageQueuePermissionEntry entry in PermissionEntries)
 			permission.PermissionEntries.Add(entry);
 
@@ -124,7 +124,7 @@ public sealed class MessageQueuePermission : CodeAccessPermission, IUnrestricted
 				int permissionAccess = 0;
 				if (accessString != null)
 				{
-					string[] accessArray = accessString.Split(new char[] { '|' });
+					string[] accessArray = accessString.Split(['|']);
 					for (int index2 = 0; index2 < accessArray.Length; ++index2)
 					{
 						string currentAccess = accessArray[index2].Trim();
@@ -178,8 +178,8 @@ public sealed class MessageQueuePermission : CodeAccessPermission, IUnrestricted
 
 		ResolveFormatNames();
 		targetQueuePermission.ResolveFormatNames();
-		MessageQueuePermission newPermission = new MessageQueuePermission();
-		Hashtable newFormatNames = new Hashtable(GetComparer());
+		MessageQueuePermission newPermission = new();
+		Hashtable newFormatNames = new(GetComparer());
 		newPermission.resolvedFormatNames = newFormatNames;
 		IDictionaryEnumerator formatNamesEnumerator;
 		Hashtable formatNamesTable;
@@ -227,8 +227,8 @@ public sealed class MessageQueuePermission : CodeAccessPermission, IUnrestricted
 
 		//If one of the tables is empty the subset cannot be resolved reliably, should assume
 		//then that they are not subset of each other.
-		if (resolvedFormatNames.Count == 0 && targetQueuePermission.resolvedFormatNames.Count != 0 ||
-			resolvedFormatNames.Count != 0 && targetQueuePermission.resolvedFormatNames.Count == 0)
+		if ((resolvedFormatNames.Count == 0 && targetQueuePermission.resolvedFormatNames.Count != 0) ||
+            (resolvedFormatNames.Count != 0 && targetQueuePermission.resolvedFormatNames.Count == 0))
 		{
 			return false;
 		}
@@ -295,7 +295,7 @@ public sealed class MessageQueuePermission : CodeAccessPermission, IUnrestricted
 					{
 						try
 						{
-							MessageQueue queue = new MessageQueue(entry.Path);
+							MessageQueue queue = new(entry.Path);
 							resolvedFormatNames.Add(queue.FormatName, entry.PermissionAccess);
 						}
 						catch
@@ -309,7 +309,7 @@ public sealed class MessageQueuePermission : CodeAccessPermission, IUnrestricted
 				{
 					try
 					{
-						MessageQueueCriteria criteria = new MessageQueueCriteria();
+						MessageQueueCriteria criteria = new();
 						if (entry.MachineName != null)
 							criteria.MachineName = entry.MachineName;
 
@@ -338,7 +338,7 @@ public sealed class MessageQueuePermission : CodeAccessPermission, IUnrestricted
 
 	public override SecurityElement ToXml()
 	{
-		SecurityElement root = new SecurityElement("IPermission");
+		SecurityElement root = new("IPermission");
 		Type type = GetType();
 		root.AddAttribute("class", type.FullName + ", " + type.Module.Assembly.FullName.Replace('\"', '\''));
 		root.AddAttribute("version", "1");
@@ -410,14 +410,14 @@ public sealed class MessageQueuePermission : CodeAccessPermission, IUnrestricted
 			throw new ArgumentException(Res.GetString(Res.InvalidParameter, "target", target.ToString()));
 
 		MessageQueuePermission targetQueuePermission = (MessageQueuePermission)target;
-		MessageQueuePermission newPermission = new MessageQueuePermission();
+		MessageQueuePermission newPermission = new();
 		if (IsUnrestricted() || targetQueuePermission.IsUnrestricted())
 		{
 			newPermission.isUnrestricted = true;
 			return newPermission;
 		}
 
-		Hashtable newFormatNames = new Hashtable(GetComparer());
+		Hashtable newFormatNames = new(GetComparer());
 		ResolveFormatNames();
 		targetQueuePermission.ResolveFormatNames();
 

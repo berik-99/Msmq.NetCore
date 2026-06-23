@@ -85,7 +85,7 @@ internal static class NativeMethods
 	public const int E_ABORT = unchecked((int)0x80004004);
 	public const int E_FAIL = unchecked((int)0x80004005);
 
-	public static Guid IID_IUnknown = new Guid("{00000000-0000-0000-C000-000000000046}");
+	public static Guid IID_IUnknown = new("{00000000-0000-0000-C000-000000000046}");
 
 	//Management Properties constants.
 	public const int MANAGEMENT_BASE = 0;

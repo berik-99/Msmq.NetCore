@@ -19,7 +19,7 @@ internal class QueueAccessModeHolder
 {
 	private readonly QueueAccessMode accessMode;
 
-	private static readonly Dictionary<QueueAccessMode, QueueAccessModeHolder> holders = new Dictionary<QueueAccessMode, QueueAccessModeHolder>();
+	private static readonly Dictionary<QueueAccessMode, QueueAccessModeHolder> holders = [];
 
 	private QueueAccessModeHolder(QueueAccessMode accessMode) => this.accessMode = accessMode;
 
@@ -32,7 +32,7 @@ internal class QueueAccessModeHolder
 
 		lock (holders)
 		{
-			QueueAccessModeHolder newHolder = new QueueAccessModeHolder(accessMode);
+			QueueAccessModeHolder newHolder = new(accessMode);
 			holders[accessMode] = newHolder;
 			return newHolder;
 		}

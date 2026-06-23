@@ -15,5 +15,5 @@ public class ReceiveCompletedEventArgs : EventArgs
 
 	public IAsyncResult AsyncResult { get; set; }
 
-	public Message Message => message ?? (message = sender.EndReceive(AsyncResult));
+	public Message Message => message ??= sender.EndReceive(AsyncResult);
 }

@@ -78,10 +78,10 @@ internal class Restrictions
 			{
 				for (int index = 0; index < restrictionCount; ++index)
 				{
-					short vt = Marshal.ReadInt16((IntPtr)((long)restrinctions + index * GetRestrictionSize() + 8));
+					short vt = Marshal.ReadInt16((IntPtr)((long)restrinctions + (index * GetRestrictionSize()) + 8));
 					if (vt != MessagePropertyVariants.VT_I4)
 					{
-						IntPtr dataPtr = (IntPtr)((long)restrinctions + index * GetRestrictionSize() + 16);
+						IntPtr dataPtr = (IntPtr)((long)restrinctions + (index * GetRestrictionSize()) + 16);
 						IntPtr data = Marshal.ReadIntPtr(dataPtr);
 						Marshal.FreeHGlobal(data);
 					}
@@ -94,12 +94,12 @@ internal class Restrictions
 
 		public IntPtr GetNextValidPtr(int offset)
 		{
-			return (IntPtr)((long)restrinctions + restrictionCount * GetRestrictionSize() + offset);
+			return (IntPtr)((long)restrinctions + (restrictionCount * GetRestrictionSize()) + offset);
 		}
 
 		public static int GetRestrictionSize()
 		{
-			return 16 + IntPtr.Size * 2;
+			return 16 + (IntPtr.Size * 2);
 		}
 	}
 }

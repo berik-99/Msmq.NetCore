@@ -9,7 +9,7 @@ namespace Msmq.NetCore.Messaging.Design;
 /// <internalonly/>
 internal class MessageQueueConverter : TypeConverter
 {
-	private static readonly Hashtable componentsCreated = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+	private static readonly Hashtable componentsCreated = new(StringComparer.InvariantCultureIgnoreCase);
 
 	/// <include file='..\..\..\doc\MessageQueueConverter.uex' path='docs/doc[@for="MessageQueueConverter.CanConvertFrom"]/*' />
 	/// <internalonly/>                               

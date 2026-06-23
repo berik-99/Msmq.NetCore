@@ -1,17 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.6.11806.211 stable
+VisualStudioVersion = 18.6.11806.211
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sources", "Sources", "{17A6A468-F190-44D1-80D6-829284E4639D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{C4D3D2A8-9C14-43B1-AC92-6164130A8998}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{BEAACE03-8338-4A02-9F39-1B9E3D1BE208}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{BEAACE03-8338-4A02-9F39-1B9E3D1BE208}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Msmq.NetCore", "Sources\Msmq.NetCore.csproj", "{24B9EED7-ABC2-4B40-85F0-E3A68A0465D1}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Msmq.NetCore.Examples.Console", "Examples\Msmq.NetCore.Examples.Console.csproj", "{4E4E0346-6C55-49DA-BCD1-799EAF306A65}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Msmq.NetCore.Test", "UnitTests\Msmq.NetCore.Test.csproj", "{58DDED22-A877-4C8B-BC09-E13CB374A47B}"
 EndProject
@@ -21,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Msmq.NetCore.CosnoleTest", "Msmq.NetCore.CosnoleTest\Msmq.NetCore.CosnoleTest.csproj", "{17E353C9-816C-441F-B37E-5310429498FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,22 +30,22 @@ Global
 		{24B9EED7-ABC2-4B40-85F0-E3A68A0465D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24B9EED7-ABC2-4B40-85F0-E3A68A0465D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24B9EED7-ABC2-4B40-85F0-E3A68A0465D1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4E4E0346-6C55-49DA-BCD1-799EAF306A65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4E4E0346-6C55-49DA-BCD1-799EAF306A65}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4E4E0346-6C55-49DA-BCD1-799EAF306A65}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4E4E0346-6C55-49DA-BCD1-799EAF306A65}.Release|Any CPU.Build.0 = Release|Any CPU
 		{58DDED22-A877-4C8B-BC09-E13CB374A47B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{58DDED22-A877-4C8B-BC09-E13CB374A47B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58DDED22-A877-4C8B-BC09-E13CB374A47B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58DDED22-A877-4C8B-BC09-E13CB374A47B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17E353C9-816C-441F-B37E-5310429498FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17E353C9-816C-441F-B37E-5310429498FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17E353C9-816C-441F-B37E-5310429498FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17E353C9-816C-441F-B37E-5310429498FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{24B9EED7-ABC2-4B40-85F0-E3A68A0465D1} = {17A6A468-F190-44D1-80D6-829284E4639D}
-		{4E4E0346-6C55-49DA-BCD1-799EAF306A65} = {C4D3D2A8-9C14-43B1-AC92-6164130A8998}
 		{58DDED22-A877-4C8B-BC09-E13CB374A47B} = {BEAACE03-8338-4A02-9F39-1B9E3D1BE208}
+		{17E353C9-816C-441F-B37E-5310429498FC} = {BEAACE03-8338-4A02-9F39-1B9E3D1BE208}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {821EE212-ED3B-4307-B2A1-6194F74145CF}

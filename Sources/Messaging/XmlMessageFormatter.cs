@@ -11,26 +11,26 @@ public class XmlMessageFormatter : IMessageFormatter
 {
 	private Type[] targetTypes;
 	private string[] targetTypeNames;
-	readonly Hashtable targetSerializerTable = new Hashtable();
+	readonly Hashtable targetSerializerTable = [];
 	private bool typeNamesAdded;
 	private bool typesAdded;
 
 	public XmlMessageFormatter()
 	{
-		TargetTypes = Array.Empty<Type>();
-		TargetTypeNames = Array.Empty<string>();
+		TargetTypes = [];
+		TargetTypeNames = [];
 	}
 
 	public XmlMessageFormatter(string[] targetTypeNames)
 	{
 		TargetTypeNames = targetTypeNames;
-		TargetTypes = Array.Empty<Type>();
+		TargetTypes = [];
 	}
 
 	public XmlMessageFormatter(Type[] targetTypes)
 	{
 		TargetTypes = targetTypes;
-		TargetTypeNames = Array.Empty<string>();
+		TargetTypeNames = [];
 	}
 
 	[MessagingDescription(Res.XmlMsgTargetTypeNames)]
@@ -71,7 +71,7 @@ public class XmlMessageFormatter : IMessageFormatter
 		CreateTargetSerializerTable();
 
 		Stream stream = message.BodyStream;
-		XmlTextReader reader = new XmlTextReader(stream);
+		XmlTextReader reader = new(stream);
 		reader.WhitespaceHandling = WhitespaceHandling.Significant;
 		reader.DtdProcessing = DtdProcessing.Prohibit;
 		bool result = false;
@@ -90,7 +90,7 @@ public class XmlMessageFormatter : IMessageFormatter
 
 	public object Clone()
 	{
-		XmlMessageFormatter formatter = new XmlMessageFormatter();
+		XmlMessageFormatter formatter = new();
 		formatter.targetTypes = targetTypes;
 		formatter.targetTypeNames = targetTypeNames;
 		formatter.typesAdded = typesAdded;
@@ -135,7 +135,7 @@ public class XmlMessageFormatter : IMessageFormatter
 		CreateTargetSerializerTable();
 
 		Stream stream = message.BodyStream;
-		XmlTextReader reader = new XmlTextReader(stream);
+		XmlTextReader reader = new(stream);
 		reader.WhitespaceHandling = WhitespaceHandling.Significant;
 		reader.DtdProcessing = DtdProcessing.Prohibit;
 		foreach (XmlSerializer serializer in targetSerializerTable.Values)

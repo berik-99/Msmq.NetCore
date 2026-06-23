@@ -351,7 +351,7 @@ public class Message : Component
 			}
 
 			//Number of seconds ellapsed since 1/1/1970
-			DateTime time = new DateTime(1970, 1, 1);
+			DateTime time = new(1970, 1, 1);
 			time = time.AddSeconds(properties.GetUI4(NativeMethods.MESSAGE_PROPID_ARRIVEDTIME)).ToLocalTime();
 			return time;
 		}
@@ -534,8 +534,7 @@ public class Message : Component
 				if (!receiveCreated)
 				{
 					filter.Body = true;
-					if (cachedBodyStream == null)
-						cachedBodyStream = new MemoryStream();
+					cachedBodyStream ??= new MemoryStream();
 
 					return cachedBodyStream;
 				}
@@ -543,11 +542,8 @@ public class Message : Component
 				throw new InvalidOperationException(Res.GetString(Res.MissingProperty, "Body"));
 			}
 
-			if (cachedBodyStream == null)
-			{
-				cachedBodyStream = new MemoryStream(properties.GetUI1Vector(NativeMethods.MESSAGE_PROPID_BODY),
+			cachedBodyStream ??= new MemoryStream(properties.GetUI1Vector(NativeMethods.MESSAGE_PROPID_BODY),
 																							0, properties.GetUI4(NativeMethods.MESSAGE_PROPID_BODY_SIZE));
-			}
 
 			return cachedBodyStream;
 		}
@@ -704,7 +700,7 @@ public class Message : Component
 			if (!filter.DestinationSymmetricKey)
 			{
 				if (!receiveCreated)
-					return Array.Empty<byte>();
+					return [];
 
 				throw new InvalidOperationException(Res.GetString(Res.MissingProperty, "DestinationSymmetricKey"));
 			}
@@ -743,7 +739,7 @@ public class Message : Component
 			if (!filter.DigitalSignature)
 			{
 				if (!receiveCreated)
-					return Array.Empty<byte>();
+					return [];
 
 				throw new InvalidOperationException(Res.GetString(Res.MissingProperty, "DigitalSignature"));
 			}
@@ -818,7 +814,7 @@ public class Message : Component
 			{
 				//Return default.
 				if (!receiveCreated)
-					return Array.Empty<byte>();
+					return [];
 
 				throw new InvalidOperationException(Res.GetString(Res.MissingProperty, "Extension"));
 			}
@@ -1197,7 +1193,7 @@ public class Message : Component
 			{
 				//Return default
 				if (!receiveCreated)
-					return Array.Empty<byte>();
+					return [];
 
 				throw new InvalidOperationException(Res.GetString(Res.MissingProperty, "SenderCertificate"));
 			}
@@ -1278,7 +1274,7 @@ public class Message : Component
 			}
 
 			//Number of seconds ellapsed since 1/1/1970
-			DateTime time = new DateTime(1970, 1, 1);
+			DateTime time = new(1970, 1, 1);
 			time = time.AddSeconds(properties.GetUI4(NativeMethods.MESSAGE_PROPID_SENTTIME)).ToLocalTime();
 			return time;
 		}
@@ -1302,7 +1298,7 @@ public class Message : Component
 				byte[] bytes = properties.GetGuid(NativeMethods.MESSAGE_PROPID_SRC_MACHINE_ID);
 				GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
 
-				MachinePropertyVariants machineProperties = new MachinePropertyVariants();
+				MachinePropertyVariants machineProperties = new();
 				machineProperties.SetNull(NativeMethods.MACHINE_PATHNAME);
 				int status = UnsafeNativeMethods.MQGetMachineProperties(null, handle.AddrOfPinnedObject(), machineProperties.Lock());
 				machineProperties.Unlock();
@@ -1789,8 +1785,7 @@ public class Message : Component
 
 		if (filter.Body && cachedBodyObject != null)
 		{
-			if (Formatter == null)
-				Formatter = new XmlMessageFormatter();
+			Formatter ??= new XmlMessageFormatter();
 
 			Formatter.Write(this, cachedBodyObject);
 		}
@@ -1888,7 +1883,7 @@ public class Message : Component
 					//Encryption algorithm cannot be set if not using Encryption
 					if (filter.EncryptionAlgorithm)
 					{
-						if (filter.UseEncryption && !UseEncryption || !filter.UseEncryption)
+						if ((filter.UseEncryption && !UseEncryption) || !filter.UseEncryption)
 							properties.Ghost(NativeMethods.MESSAGE_PROPID_ENCRYPTION_ALG);
 					}
 					if (filter.DigitalSignature)
@@ -1932,7 +1927,7 @@ public class Message : Component
 
 	private string IdFromByteArray(byte[] bytes)
 	{
-		StringBuilder result = new StringBuilder();
+		StringBuilder result = new();
 		byte[] guidBytes = new byte[GenericIdSize];
 		Array.Copy(bytes, guidBytes, GenericIdSize);
 		int id = BitConverter.ToInt32(bytes, GenericIdSize);
@@ -1944,7 +1939,7 @@ public class Message : Component
 
 	private byte[] IdToByteArray(string id)
 	{
-		string[] pieces = id.Split(new char[] { '\\' });
+		string[] pieces = id.Split(['\\']);
 		if (pieces.Length != 2)
 			throw new InvalidOperationException(Res.GetString(Res.InvalidId));
 
@@ -1986,7 +1981,7 @@ public class Message : Component
 	internal static string StringFromBytes(byte[] bytes, int len)
 	{
 		//If the string ends with 0, lets trim it.
-		if (len != 0 && bytes[len * 2 - 1] == 0 && bytes[len * 2 - 2] == 0)
+		if (len != 0 && bytes[(len * 2) - 1] == 0 && bytes[(len * 2) - 2] == 0)
 			--len;
 
 		char[] charBuffer = new char[len];
@@ -1996,7 +1991,7 @@ public class Message : Component
 
 	internal static byte[] StringToBytes(string value)
 	{
-		int size = value.Length * 2 + 1;
+		int size = (value.Length * 2) + 1;
 		byte[] byteBuffer = new byte[size];
 		byteBuffer[size - 1] = 0;
 		Encoding.Unicode.GetBytes(value.ToCharArray(), 0, value.Length, byteBuffer, 0);
