@@ -19,7 +19,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Sources\Msmq.NetCore.csproj" />
+	  <ProjectReference Include="..\..\Sources\Msmq.NetCore.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
