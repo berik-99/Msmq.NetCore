@@ -1,9 +1,10 @@
-# Regenerate the PNG assets from icon.svg using an installed Chrome or Edge.
+# Regenerate the PNG assets from icons/icon.svg using an installed Chrome or Edge.
 # Run from any directory: pwsh -File tools/generate_icons.ps1
 param([string]$BrowserPath)
 
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
+$iconsPath = Join-Path $projectRoot 'icons'
 $assetsPath = Join-Path $projectRoot 'Sources/Assets'
 $renderPath = Join-Path $projectRoot 'Sources/obj/icon-renderer'
 
@@ -23,7 +24,7 @@ if (-not $BrowserPath -or -not (Test-Path -LiteralPath $BrowserPath)) {
 }
 
 New-Item -ItemType Directory -Path $renderPath -Force | Out-Null
-$svg = [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $projectRoot 'icon.svg')))
+$svg = [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $iconsPath 'icon.svg')))
 $htmlPath = Join-Path $renderPath 'render.html'
 @"
 <!doctype html><meta charset="utf-8"><body><script>
@@ -61,8 +62,8 @@ foreach ($size in @(128, 256, 512)) {
 }
 foreach ($size in @(128, 256, 512)) {
     $name = if ($size -eq 128) { 'icon.png' } else { "icon-$size.png" }
-    [IO.File]::WriteAllBytes((Join-Path $projectRoot $name), $images[$size])
-    Write-Output "Generated $name ($size x $size) in the repository root from icon.svg"
+    [IO.File]::WriteAllBytes((Join-Path $iconsPath $name), $images[$size])
+    Write-Output "Generated $name ($size x $size) in icons from icons/icon.svg"
 }
 [IO.File]::WriteAllBytes((Join-Path $assetsPath 'icon.png'), $images[128])
 Write-Output 'Updated Sources/Assets/icon.png for the NuGet package'
