@@ -123,6 +123,10 @@ The checked-in file contains 666 entries adapted from Microsoft's API documentat
 
 The source snapshot, attribution, transformation details, and regeneration command are recorded in `Sources/Documentation/ThirdPartyNotices.txt`. Regeneration uses `python tools/update_api_docs.py` and requires network access; normal builds use the checked-in XML offline.
 
+## Package icon
+
+The editable source is `Sources/Assets/icon.svg`. Run `pwsh -File tools/generate_icons.ps1` with Chrome or Edge installed to regenerate the 128, 256, and 512 pixel PNGs in the same folder. NuGet uses `icon.png` (128 pixels); the SVG and larger PNGs stay in the repository. Icon generation is a maintenance operation, not a build prerequisite.
+
 ## Acknowledgments and license
 
 Based on [MSMQ.Messaging](https://github.com/weloytty/MSMQ.Messaging), by Bill Loytty, and the original System.Messaging implementation. Library source code is licensed under MIT; see LICENSE. The bundled Microsoft-derived API documentation is licensed under CC BY 4.0; see ThirdPartyNotices.txt and LICENSE-API-DOCS.txt in the package. NuGet metadata identifies both licenses as `MIT AND CC-BY-4.0`.

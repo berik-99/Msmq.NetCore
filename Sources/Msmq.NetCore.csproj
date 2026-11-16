@@ -45,7 +45,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="Assets\*" Pack="true" PackagePath="\" />
+		<None Include="Assets\README.md;Assets\icon.png" Pack="true" PackagePath="\" />
 		<None Include="..\LICENSE" Pack="true" PackagePath="\" />
 		<None Remove="Documentation\Msmq.NetCore.xml;Documentation\ThirdPartyNotices.txt;Documentation\LICENSE-API-DOCS.txt" />
 		<None Include="Documentation\Msmq.NetCore.xml" CopyToOutputDirectory="PreserveNewest"
