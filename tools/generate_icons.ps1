@@ -23,7 +23,7 @@ if (-not $BrowserPath -or -not (Test-Path -LiteralPath $BrowserPath)) {
 }
 
 New-Item -ItemType Directory -Path $renderPath -Force | Out-Null
-$svg = [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $assetsPath 'icon.svg')))
+$svg = [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $projectRoot 'icon.svg')))
 $htmlPath = Join-Path $renderPath 'render.html'
 @"
 <!doctype html><meta charset="utf-8"><body><script>
@@ -61,6 +61,8 @@ foreach ($size in @(128, 256, 512)) {
 }
 foreach ($size in @(128, 256, 512)) {
     $name = if ($size -eq 128) { 'icon.png' } else { "icon-$size.png" }
-    [IO.File]::WriteAllBytes((Join-Path $assetsPath $name), $images[$size])
-    Write-Output "Generated $name ($size x $size) from icon.svg"
+    [IO.File]::WriteAllBytes((Join-Path $projectRoot $name), $images[$size])
+    Write-Output "Generated $name ($size x $size) in the repository root from icon.svg"
 }
+[IO.File]::WriteAllBytes((Join-Path $assetsPath 'icon.png'), $images[128])
+Write-Output 'Updated Sources/Assets/icon.png for the NuGet package'

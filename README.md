@@ -1,5 +1,7 @@
 # Msmq.NetCore
 
+![Msmq.NetCore icon](https://raw.githubusercontent.com/berik-99/Msmq.NetCore/main/icon.png)
+
 Msmq.NetCore provides MSMQ access for .NET Core and modern .NET on Windows. It is a port of the System.Messaging API, forked from MSMQ.Messaging.
 
 **For .NET Framework applications, use Microsoft's official `System.Messaging` assembly.** This package focuses on .NET Core and modern .NET.
@@ -125,7 +127,9 @@ The source snapshot, attribution, transformation details, and regeneration comma
 
 ## Package icon
 
-The editable source is `Sources/Assets/icon.svg`. Run `pwsh -File tools/generate_icons.ps1` with Chrome or Edge installed to regenerate the 128, 256, and 512 pixel PNGs in the same folder. NuGet uses `icon.png` (128 pixels); the SVG and larger PNGs stay in the repository. Icon generation is a maintenance operation, not a build prerequisite.
+The editable source, `icon.svg`, and the PNG exports are in the repository root: [SVG](https://github.com/berik-99/Msmq.NetCore/blob/main/icon.svg), [PNG 128](https://raw.githubusercontent.com/berik-99/Msmq.NetCore/main/icon.png), [PNG 256](https://raw.githubusercontent.com/berik-99/Msmq.NetCore/main/icon-256.png), and [PNG 512](https://raw.githubusercontent.com/berik-99/Msmq.NetCore/main/icon-512.png).
+
+Run `pwsh -File tools/generate_icons.ps1` with Chrome or Edge installed to regenerate all three PNGs and copy the 128 pixel icon to `Sources/Assets/icon.png`. That folder contains only the package icon. NuGet includes this icon and the root README; the SVG and preview exports stay in the repository. Icon generation is a maintenance operation, not a build prerequisite.
 
 ## Acknowledgments and license
 
