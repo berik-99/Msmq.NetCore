@@ -24,6 +24,8 @@
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
 		<IsPackable>true</IsPackable>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	</PropertyGroup>
 
 	<!-- Keep the fallback dependencies usable by .NET Core 3.0 consumers. -->
