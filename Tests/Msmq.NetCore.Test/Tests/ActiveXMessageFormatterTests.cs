@@ -10,7 +10,7 @@ public class ActiveXMessageFormatterTests : IAsyncLifetime
     private readonly QueueFixture _fixture = new();
     private string _testQueuePath;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await _fixture.InitializeAsync();
         _testQueuePath = $".\\private$\\test-activex-{Guid.NewGuid():N}";
@@ -21,7 +21,7 @@ public class ActiveXMessageFormatterTests : IAsyncLifetime
         }
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         _fixture.PurgeQueue(_testQueuePath);
         if (MessageQueue.Exists(_testQueuePath))

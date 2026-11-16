@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
-using System.Runtime.InteropServices;
 
 namespace Msmq.NetCore.Test;
 
@@ -103,27 +101,7 @@ public class Person : IEquatable<Person>
 
 public static class TestCommon
 {
-    public const string TEST_PRIVATE_TRANSACTIONAL_QUEUE = ".\\private$\\testTransactional";
-    public const string TEST_PRIVATE_NONTRANSACTIONAL_QUEUE = ".\\private$\\testNonTransactional";
-    public const string TEST_ADMIN_QUEUE = ".\\private$\\testadminqueue";
     public const string TEST_MESSAGE_BODY = "Did this work?";
-
-    [DllImport("msvcrt.dll", CallingConvention = CallingConvention.Cdecl)]
-    private static extern int memcmp(byte[] b1, byte[] b2, long count);
-
-    public static bool ByteArrayCompare(byte[] b1, byte[] b2)
-    {
-        // Validate buffers are the same length.
-        // This also ensures that the count does not exceed the length of either buffer.
-        return b1?.Length == b2?.Length && memcmp(b1, b2, b1.Length) == 0;
-    }
-
-    public static byte[] GetImageBytes([NotNull] Image i)
-    {
-        using var ms = new MemoryStream();
-        i?.Save(ms, i.RawFormat);
-        return ms.ToArray();
-    }
 
     /// <summary>
     /// Factory method to create an Address with default values for testing

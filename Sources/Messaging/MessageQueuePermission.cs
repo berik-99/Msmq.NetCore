@@ -1,3 +1,5 @@
+﻿// CAS APIs are retained for source compatibility; Windows ACLs enforce MSMQ access.
+#pragma warning disable SYSLIB0003
 //----------------------------------------------------
 // <copyright file="MessageQueuePermission.cs" company="Microsoft">
 //     Copyright (c) Microsoft Corporation.  All rights reserved.

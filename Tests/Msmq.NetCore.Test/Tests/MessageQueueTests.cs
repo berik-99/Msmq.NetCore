@@ -6,33 +6,8 @@ public class MessageQueueTests : IAsyncLifetime
 {
     private readonly QueueFixture _fixture = new();
 
-    public async Task InitializeAsync()
-    {
-        await _fixture.InitializeAsync();
-
-        if (!MessageQueue.Exists(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE))
-        {
-            using var mq = MessageQueue.Create(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE, true);
-        }
-
-        if (!MessageQueue.Exists(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE))
-        {
-            using var mq = MessageQueue.Create(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE);
-        }
-
-        if (!MessageQueue.Exists(TestCommon.TEST_ADMIN_QUEUE))
-        {
-            using var mq = MessageQueue.Create(TestCommon.TEST_ADMIN_QUEUE);
-        }
-    }
-
-    public async Task DisposeAsync()
-    {
-        _fixture.PurgeQueue(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE);
-        _fixture.PurgeQueue(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE);
-        _fixture.PurgeQueue(TestCommon.TEST_ADMIN_QUEUE);
-        await _fixture.DisposeAsync();
-    }
+    public ValueTask InitializeAsync() => _fixture.InitializeAsync();
+    public ValueTask DisposeAsync() => _fixture.DisposeAsync();
 
     [Fact]
     public void CreateTest()
@@ -63,18 +38,18 @@ public class MessageQueueTests : IAsyncLifetime
     public void ReceiveTest()
     {
         SendTest();
-        using var mq = new MessageQueue(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE)
+        using var mq = new MessageQueue(_fixture.TransactionalQueue)
         {
             Formatter = new XmlMessageFormatter(new Type[] { typeof(string) })
         };
-        var msg = mq.Receive();
+        using var msg = mq.Receive(TimeSpan.FromSeconds(5), MessageQueueTransactionType.Single);
         Assert.Equal(msg.Body, TestCommon.TEST_MESSAGE_BODY);
     }
 
     [Fact]
     public void ReceiveByCorrelationIdTest()
     {
-        using MessageQueue queue = new MessageQueue(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE);
+        using MessageQueue queue = new MessageQueue(_fixture.NonTransactionalQueue);
         Message msg = new Message("Example Message Body");
 
         queue.Send(msg, "Example Message Label");
@@ -83,7 +58,7 @@ public class MessageQueueTests : IAsyncLifetime
 
         msg = queue.ReceiveById(id, TimeSpan.FromSeconds(10.0));
 
-        using MessageQueue transQueue = new MessageQueue(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE);
+        using MessageQueue transQueue = new MessageQueue(_fixture.TransactionalQueue);
         Message responseMsg = new Message("Example Response Message Body") { CorrelationId = id };
 
         transQueue.Send(responseMsg, "Example Response Message Label",
@@ -107,7 +82,7 @@ public class MessageQueueTests : IAsyncLifetime
     [Fact]
     public void SendTest()
     {
-        using var mq = new MessageQueue(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE);
+        using var mq = new MessageQueue(_fixture.TransactionalQueue);
         if (mq.Transactional)
         {
             using var msgTransaction = new MessageQueueTransaction();
@@ -124,7 +99,7 @@ public class MessageQueueTests : IAsyncLifetime
     [Fact]
     public void SendAndReceiveMultipleMessagesTest()
     {
-        using var queue = new MessageQueue(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE);
+        using var queue = new MessageQueue(_fixture.NonTransactionalQueue);
         queue.Formatter = new XmlMessageFormatter(new Type[] { typeof(string) });
 
         string[] messageBodies = ["Message 1", "Message 2", "Message 3"];
@@ -167,7 +142,7 @@ public class MessageQueueTests : IAsyncLifetime
             {
                 msg = queue.Receive(TimeSpan.FromMilliseconds(500));
             }
-            catch (MessageQueueException ex)
+            catch (MessageQueueException ex) when (ex.MessageQueueErrorCode == MessageQueueErrorCode.IOTimeout)
             {
                 // This is the expected behavior when there are no messages
                 // e il timeout scade
@@ -227,7 +202,7 @@ public class MessageQueueTests : IAsyncLifetime
     [Fact]
     public void GetMessageEnumeratorTest()
     {
-        using var queue = new MessageQueue(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE);
+        using var queue = new MessageQueue(_fixture.NonTransactionalQueue);
         queue.Formatter = new XmlMessageFormatter(new Type[] { typeof(string) });
 
         // Invia messaggi
@@ -236,7 +211,7 @@ public class MessageQueueTests : IAsyncLifetime
         queue.Send("Message C");
 
         // Enumera i messaggi senza rimuoverli
-        var enumerator = queue.GetMessageEnumerator();
+        var enumerator = queue.GetMessageEnumerator2();
         var messages = new List<string>();
 
         while (enumerator.MoveNext())
@@ -255,11 +230,11 @@ public class MessageQueueTests : IAsyncLifetime
     [Fact]
     public void MessageQueuePropertiesTest()
     {
-        using var queue = new MessageQueue(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE);
+        using var queue = new MessageQueue(_fixture.NonTransactionalQueue);
 
         // Verify basic properties
         Assert.NotNull(queue.Path);
-        Assert.Equal(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE, queue.Path);
+        Assert.Equal(_fixture.NonTransactionalQueue, queue.Path);
     }
 
     [Fact]
@@ -299,8 +274,8 @@ public class MessageQueueTests : IAsyncLifetime
     public void ExistsTest()
     {
         // Test queues should already exist from setup
-        Assert.True(MessageQueue.Exists(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE));
-        Assert.True(MessageQueue.Exists(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE));
+        Assert.True(MessageQueue.Exists(_fixture.TransactionalQueue));
+        Assert.True(MessageQueue.Exists(_fixture.NonTransactionalQueue));
     }
 
     [Fact]
@@ -313,14 +288,14 @@ public class MessageQueueTests : IAsyncLifetime
     [Fact]
     public void TransactionalQueueTest()
     {
-        using var queue = new MessageQueue(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE);
+        using var queue = new MessageQueue(_fixture.TransactionalQueue);
         Assert.True(queue.Transactional);
     }
 
     [Fact]
     public void NonTransactionalQueueTest()
     {
-        using var queue = new MessageQueue(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE);
+        using var queue = new MessageQueue(_fixture.NonTransactionalQueue);
         Assert.False(queue.Transactional);
     }
 }

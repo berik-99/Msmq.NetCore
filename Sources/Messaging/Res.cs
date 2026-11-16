@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Resources;
 
 namespace Msmq.NetCore.Messaging;
@@ -316,7 +316,7 @@ internal sealed class Res
         for (int index = 0; index < args.Length; ++index)
         {
             if (args[index] is string str && str.Length > 1024)
-                args[index] = str[..1021] + "...";
+                args[index] = str.Substring(0, 1021) + "...";
         }
         return string.Format(CultureInfo.CurrentCulture, format, args);
     }

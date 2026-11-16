@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
@@ -28,7 +27,6 @@ internal static class SafeNativeMethods
 	}
 
 	[DllImport(ExternDll.Mqrt, CharSet = CharSet.Unicode)]
-	[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 	public static extern int MQCloseQueue(IntPtr handle);
 
 	[DllImport(ExternDll.Mqrt, EntryPoint = "MQPathNameToFormatName", CharSet = CharSet.Unicode)]
@@ -63,15 +61,12 @@ internal static class SafeNativeMethods
 	public static extern int MQCreateCursor(MessageQueueHandle handle, out CursorHandle cursorHandle);
 
 	[DllImport(ExternDll.Mqrt, CharSet = CharSet.Unicode)]
-	[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 	public static extern int MQCloseCursor(IntPtr cursorHandle);
 
 	[DllImport(ExternDll.Mqrt, CharSet = CharSet.Unicode)]
-	[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 	public static extern void MQFreeSecurityContext(IntPtr handle);
 
 	[DllImport(ExternDll.Mqrt, CharSet = CharSet.Unicode)]
-	[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 	public static extern int MQLocateEnd(IntPtr enumHandle);
 
 	[DllImport(ExternDll.Mqrt, CharSet = CharSet.Unicode)]

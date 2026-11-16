@@ -6,27 +6,8 @@ public class XmlMessageFormatterTests : IAsyncLifetime
 {
     private readonly QueueFixture _fixture = new();
 
-    public async Task InitializeAsync()
-    {
-        await _fixture.InitializeAsync();
-
-        if (!MessageQueue.Exists(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE))
-        {
-            MessageQueue.Create(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE, true);
-        }
-
-        if (!MessageQueue.Exists(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE))
-        {
-            _ = MessageQueue.Create(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE);
-        }
-    }
-
-    public async Task DisposeAsync()
-    {
-        _fixture.PurgeQueue(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE);
-        _fixture.PurgeQueue(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE);
-        await _fixture.DisposeAsync();
-    }
+    public ValueTask InitializeAsync() => _fixture.InitializeAsync();
+    public ValueTask DisposeAsync() => _fixture.DisposeAsync();
 
     [Fact]
     public void XmlMessageFormatterSendTest()
@@ -34,11 +15,12 @@ public class XmlMessageFormatterTests : IAsyncLifetime
         Address addy = new() { StreetAddress = "123 Main Street", City = "Anytown", StateOrRegion = "NC", PostalCode = "12345" };
         Person p = new() { FirstName = "Test", LastName = "User", Address = addy, MaritalStatus = MaritalStatus.Married };
 
-        using var q = new MessageQueue(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE);
+        using var q = new MessageQueue(_fixture.NonTransactionalQueue);
         using var m = new Message(p);
         q.Formatter = new XmlMessageFormatter(new Type[] { typeof(Person) });
         q.Send(m);
-        Assert.True(true);
+        using var received = q.ReceiveById(m.Id, TimeSpan.FromSeconds(5));
+        Assert.Equal(p, Assert.IsType<Person>(received.Body));
     }
 
     [Fact]
@@ -81,7 +63,7 @@ public class XmlMessageFormatterTests : IAsyncLifetime
         var address = TestCommon.CreateTestAddressMinimal();
         var person = TestCommon.CreateTestPerson(address: address);
 
-        using var q = new MessageQueue(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE);
+        using var q = new MessageQueue(_fixture.NonTransactionalQueue);
         using var m = new Message(person);
         q.Formatter = new XmlMessageFormatter(new Type[] { typeof(Person) });
         q.Send(m);
@@ -157,7 +139,7 @@ public class XmlMessageFormatterTests : IAsyncLifetime
             Address = null
         };
 
-        using var q = new MessageQueue(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE);
+        using var q = new MessageQueue(_fixture.NonTransactionalQueue);
         using var m = new Message(person);
         q.Formatter = new XmlMessageFormatter(new Type[] { typeof(Person) });
         q.Send(m);
@@ -171,7 +153,7 @@ public class XmlMessageFormatterTests : IAsyncLifetime
     [Fact]
     public void XmlMessageFormatterMultipleSendReceiveCyclesTest()
     {
-        using var q = new MessageQueue(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE);
+        using var q = new MessageQueue(_fixture.NonTransactionalQueue);
         q.Formatter = new XmlMessageFormatter(new Type[] { typeof(Person) });
 
         for (int i = 0; i < 5; i++)
@@ -210,7 +192,7 @@ public class XmlMessageFormatterTests : IAsyncLifetime
             }
         };
 
-        using var q = new MessageQueue(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE);
+        using var q = new MessageQueue(_fixture.NonTransactionalQueue);
         using var m = new Message(person);
         q.Formatter = new XmlMessageFormatter(new Type[] { typeof(Person) });
         q.Send(m);
@@ -230,7 +212,7 @@ public class XmlMessageFormatterTests : IAsyncLifetime
     {
         var person = TestCommon.CreateTestPerson();
 
-        using var q = new MessageQueue(TestCommon.TEST_PRIVATE_TRANSACTIONAL_QUEUE);
+        using var q = new MessageQueue(_fixture.TransactionalQueue);
         q.Formatter = new XmlMessageFormatter(new Type[] { typeof(Person) });
 
         using var transaction = new MessageQueueTransaction();
@@ -264,7 +246,7 @@ public class XmlMessageFormatterTests : IAsyncLifetime
             }
         };
 
-        using var q = new MessageQueue(TestCommon.TEST_PRIVATE_NONTRANSACTIONAL_QUEUE);
+        using var q = new MessageQueue(_fixture.NonTransactionalQueue);
         using var m = new Message(person);
         q.Formatter = new XmlMessageFormatter(new Type[] { typeof(Person) });
         q.Send(m);

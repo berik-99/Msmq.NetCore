@@ -518,6 +518,7 @@ public class Message : Component
 		{
 			filter.Body = true;
 			cachedBodyObject = value;
+			cachedBodyStream = null;
 		}
 	}
 
@@ -1758,6 +1759,15 @@ public class Message : Component
 		}
 	}
 
+	internal void ClearBody()
+	{
+		cachedBodyObject = null;
+		cachedBodyStream = null;
+		properties.Remove(NativeMethods.MESSAGE_PROPID_BODY);
+		properties.Remove(NativeMethods.MESSAGE_PROPID_BODY_TYPE);
+		properties.Remove(NativeMethods.MESSAGE_PROPID_BODY_SIZE);
+	}
+
 	internal void AdjustToSend()
 	{
 		//Write cached properties
@@ -1794,7 +1804,14 @@ public class Message : Component
 		{
 			cachedBodyStream.Position = 0;
 			byte[] bytes = new byte[(int)cachedBodyStream.Length];
-			cachedBodyStream.Read(bytes, 0, bytes.Length);
+			int offset = 0;
+			while (offset < bytes.Length)
+			{
+				int read = cachedBodyStream.Read(bytes, offset, bytes.Length - offset);
+				if (read == 0)
+					throw new EndOfStreamException();
+				offset += read;
+			}
 			properties.SetUI1Vector(NativeMethods.MESSAGE_PROPID_BODY, bytes);
 			properties.SetUI4(NativeMethods.MESSAGE_PROPID_BODY_SIZE, bytes.Length);
 		}

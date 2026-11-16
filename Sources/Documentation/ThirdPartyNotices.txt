@@ -1,0 +1,28 @@
+External API documentation
+==========================
+
+Msmq.NetCore.xml contains adapted Microsoft .NET API reference documentation.
+Copyright Microsoft and contributors.
+
+Source: https://github.com/dotnet/dotnet-api-docs/tree/d2f51ac472178114356e2a26a36ec366e35f8b7c/xml/System.Messaging
+Snapshot: d2f51ac472178114356e2a26a36ec366e35f8b7c
+Upstream license: https://github.com/dotnet/dotnet-api-docs/blob/d2f51ac472178114356e2a26a36ec366e35f8b7c/LICENSE
+
+The adapted documentation is distributed under Creative Commons Attribution
+4.0 International (CC BY 4.0): https://creativecommons.org/licenses/by/4.0/
+The complete license, including its warranty disclaimer, is included in
+LICENSE-API-DOCS.txt. The library's source code remains licensed under MIT.
+
+Changes: extracted IntelliSense summaries, parameter/value/return descriptions
+and exceptions; mapped assembly and namespace names; excluded unavailable
+installer/designer APIs and obsolete CAS security claims; added compatibility
+and platform notes for .NET Core and modern .NET.
+
+The external XML is checked into the repository and copied beside the assembly.
+Builds do not download Microsoft documentation or require .NET Framework.
+To regenerate it from the pinned source, run:
+
+    python tools/update_api_docs.py
+
+Regeneration requires Python 3.9+ and network access. This is a maintenance
+operation, not a build prerequisite. This port is not endorsed by Microsoft.

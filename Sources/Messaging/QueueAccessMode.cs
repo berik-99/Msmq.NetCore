@@ -25,13 +25,10 @@ internal class QueueAccessModeHolder
 
 	public static QueueAccessModeHolder GetQueueAccessModeHolder(QueueAccessMode accessMode)
 	{
-		if (holders.TryGetValue(accessMode, out QueueAccessModeHolder value))
-		{
-			return value;
-		}
-
 		lock (holders)
 		{
+			if (holders.TryGetValue(accessMode, out QueueAccessModeHolder value))
+				return value;
 			QueueAccessModeHolder newHolder = new(accessMode);
 			holders[accessMode] = newHolder;
 			return newHolder;

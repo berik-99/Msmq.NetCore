@@ -1,3 +1,5 @@
+﻿// CAS APIs are retained for source compatibility; Windows ACLs enforce MSMQ access.
+#pragma warning disable SYSLIB0003
 using System;
 using System.Security.Permissions;
 using System.Security;

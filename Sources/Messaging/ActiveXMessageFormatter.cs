@@ -127,50 +127,51 @@ public class ActiveXMessageFormatter : IMessageFormatter
                 Array.Copy(bytes, newBytes, 8);
                 return new DateTime(BitConverter.ToInt64(newBytes, 0));
             case VT_I1:
+                return unchecked((sbyte)ReadBytes(message.BodyStream, 1)[0]);
             case VT_UI1:
                 stream = message.BodyStream;
                 bytes = new byte[1];
-                stream.Read(bytes, 0, 1);
+                ReadBytes(stream, bytes);
                 return bytes[0];
             case VT_I2:
                 stream = message.BodyStream;
                 bytes = new byte[2];
-                stream.Read(bytes, 0, 2);
+                ReadBytes(stream, bytes);
                 return BitConverter.ToInt16(bytes, 0);
             case VT_UI2:
                 stream = message.BodyStream;
                 bytes = new byte[2];
-                stream.Read(bytes, 0, 2);
+                ReadBytes(stream, bytes);
                 return BitConverter.ToUInt16(bytes, 0);
             case VT_I4:
                 stream = message.BodyStream;
                 bytes = new byte[4];
-                stream.Read(bytes, 0, 4);
+                ReadBytes(stream, bytes);
                 return BitConverter.ToInt32(bytes, 0);
             case VT_UI4:
                 stream = message.BodyStream;
                 bytes = new byte[4];
-                stream.Read(bytes, 0, 4);
+                ReadBytes(stream, bytes);
                 return BitConverter.ToUInt32(bytes, 0);
             case VT_I8:
                 stream = message.BodyStream;
                 bytes = new byte[8];
-                stream.Read(bytes, 0, 8);
+                ReadBytes(stream, bytes);
                 return BitConverter.ToInt64(bytes, 0);
             case VT_UI8:
                 stream = message.BodyStream;
                 bytes = new byte[8];
-                stream.Read(bytes, 0, 8);
+                ReadBytes(stream, bytes);
                 return BitConverter.ToUInt64(bytes, 0);
             case VT_R4:
                 stream = message.BodyStream;
                 bytes = new byte[4];
-                stream.Read(bytes, 0, 4);
+                ReadBytes(stream, bytes);
                 return BitConverter.ToSingle(bytes, 0);
             case VT_R8:
                 stream = message.BodyStream;
                 bytes = new byte[8];
-                stream.Read(bytes, 0, 8);
+                ReadBytes(stream, bytes);
                 return BitConverter.ToDouble(bytes, 0);
             case VT_NULL:
                 return null;
@@ -190,13 +191,15 @@ public class ActiveXMessageFormatter : IMessageFormatter
         if (message == null)
             throw new ArgumentNullException(nameof(message));
 
+        // A formatter may replace a previously serialized body on the same message.
+        message.ClearBody();
+
         Stream stream;
         int variantType;
         if (obj is string s)
         {
             int size = s.Length * 2;
-            if (internalBuffer == null || internalBuffer.Length < size)
-                internalBuffer = new byte[size];
+            internalBuffer = new byte[size];
 
             unicodeEncoding ??= new UnicodeEncoding();
 
@@ -210,8 +213,7 @@ public class ActiveXMessageFormatter : IMessageFormatter
         else if (obj is byte[])
         {
             byte[] bytes = (byte[])obj;
-            if (internalBuffer == null || internalBuffer.Length < bytes.Length)
-                internalBuffer = new byte[bytes.Length];
+            internalBuffer = new byte[bytes.Length];
 
             Array.Copy(bytes, internalBuffer, bytes.Length);
             message.properties.SetUI1Vector(NativeMethods.MESSAGE_PROPID_BODY, internalBuffer);
@@ -223,11 +225,11 @@ public class ActiveXMessageFormatter : IMessageFormatter
         else if (obj is char[] chars)
         {
             int size = chars.Length * 2;
-            if (internalBuffer == null || internalBuffer.Length < size)
-                internalBuffer = new byte[size];
+            internalBuffer = new byte[size];
 
             (unicodeEncoding ??= new UnicodeEncoding()).GetBytes(chars, 0, size / 2, internalBuffer, 0);
             message.properties.SetUI1Vector(NativeMethods.MESSAGE_PROPID_BODY, internalBuffer);
+            message.properties.AdjustSize(NativeMethods.MESSAGE_PROPID_BODY, size);
             message.properties.SetUI4(NativeMethods.MESSAGE_PROPID_BODY_SIZE, size);
             message.properties.SetUI4(NativeMethods.MESSAGE_PROPID_BODY_TYPE, VT_LPWSTR);
             return;
@@ -356,6 +358,25 @@ public class ActiveXMessageFormatter : IMessageFormatter
 
         message.BodyStream = stream;
         message.BodyType = variantType;
+    }
+
+    private static byte[] ReadBytes(Stream stream, int length)
+    {
+        byte[] bytes = new byte[length];
+        ReadBytes(stream, bytes);
+        return bytes;
+    }
+
+    private static void ReadBytes(Stream stream, byte[] bytes)
+    {
+        int offset = 0;
+        while (offset < bytes.Length)
+        {
+            int read = stream.Read(bytes, offset, bytes.Length - offset);
+            if (read == 0)
+                throw new EndOfStreamException();
+            offset += read;
+        }
     }
 
     [ComVisible(false)]

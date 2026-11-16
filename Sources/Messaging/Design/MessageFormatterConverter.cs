@@ -4,6 +4,9 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters;
 
+// The designer must continue to recognize the legacy binary formatter.
+#pragma warning disable CS0618, SYSLIB0050
+
 namespace Msmq.NetCore.Messaging.Design;
 
 /// <include file='..\..\..\doc\MessageFormatterConverter.uex' path='docs/doc[@for="MessageFormatterConverter"]/*' />
@@ -31,7 +34,6 @@ internal class MessageFormatterConverter : ExpandableObjectConverter
 
     /// <include file='..\..\..\doc\MessageFormatterConverter.uex' path='docs/doc[@for="MessageFormatterConverter.ConvertFrom"]/*' />
     /// <internalonly/>
-    [Obsolete]
     public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
     {
         if (value != null && value is string s)
@@ -49,7 +51,6 @@ internal class MessageFormatterConverter : ExpandableObjectConverter
 
     /// <include file='..\..\..\doc\MessageFormatterConverter.uex' path='docs/doc[@for="MessageFormatterConverter.ConvertTo"]/*' />
     /// <internalonly/>
-    [Obsolete]
     public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
     {
         if (destinationType != null && destinationType == typeof(string))
@@ -94,7 +95,6 @@ internal class MessageFormatterConverter : ExpandableObjectConverter
 
     /// <include file='..\..\..\doc\MessageFormatterConverter.uex' path='docs/doc[@for="MessageFormatterConverter.GetStandardValues"]/*' />
     /// <internalonly/>
-    [Obsolete]
     public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
     {
         StandardValuesCollection values = new(new object[] { new ActiveXMessageFormatter(),

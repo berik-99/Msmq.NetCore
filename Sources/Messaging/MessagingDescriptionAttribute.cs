@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel;
-using System.Security.Permissions;
 
 namespace Msmq.NetCore.Messaging;
 
@@ -16,7 +15,6 @@ public class MessagingDescriptionAttribute : DescriptionAttribute
 
 	public override string Description
 	{
-		[HostProtection(SharedState = true)] // DescriptionAttribute uses SharedState=true. We should not change base's behavior
 		get
 		{
 			if (!replaced)

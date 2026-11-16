@@ -1,94 +1,63 @@
-using Msmq.NetCore.Messaging;
+﻿using Msmq.NetCore.Messaging;
 
 namespace Msmq.NetCore.Test;
 
-/// <summary>
-/// Base fixture for tests requiring MSMQ queue setup/teardown.
-/// Implements IAsyncLifetime for asynchronous lifecycle management.
-/// </summary>
 public class QueueFixture : IAsyncLifetime
 {
     private readonly List<string> _createdQueues = [];
+    public string TransactionalQueue { get; } = $".\\private$\\msmq-test-tx-{Guid.NewGuid():N}";
+    public string NonTransactionalQueue { get; } = $".\\private$\\msmq-test-{Guid.NewGuid():N}";
+    public string AdminQueue { get; } = $".\\private$\\msmq-test-admin-{Guid.NewGuid():N}";
 
-    public async Task InitializeAsync()
+    public ValueTask InitializeAsync()
     {
-        // Setup iniziale se necessario
-        await Task.CompletedTask;
+        using var transactional = CreateTestQueue(TransactionalQueue, true);
+        using var regular = CreateTestQueue(NonTransactionalQueue);
+        using var admin = CreateTestQueue(AdminQueue);
+        return default;
     }
 
-    public async Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        // Clean up all created queues
-        foreach (string queueName in _createdQueues)
+        List<Exception> errors = [];
+        foreach (string queue in _createdQueues)
         {
             try
             {
-                if (MessageQueue.Exists(queueName))
-                {
-                    MessageQueue.Delete(queueName);
-                }
+                if (MessageQueue.Exists(queue))
+                    MessageQueue.Delete(queue);
             }
-            catch
-            {
-                // Ignore errors during cleanup
-            }
+            catch (Exception error) { errors.Add(error); }
         }
-
         _createdQueues.Clear();
-        await Task.CompletedTask;
+        if (errors.Count != 0)
+            throw new AggregateException(errors);
+        return default;
     }
 
-    /// <summary>
-    /// Creates a test queue and registers it for automatic cleanup
-    /// </summary>
     public MessageQueue CreateTestQueue(string queueName = null, bool transactional = false)
     {
-        queueName ??= $".\\private$\\test-{Guid.NewGuid():N}";
-
-        if (!MessageQueue.Exists(queueName))
-        {
-            MessageQueue.Create(queueName, transactional);
-        }
-
+        queueName ??= $".\\private$\\msmq-test-{Guid.NewGuid():N}";
+        var queue = MessageQueue.Create(queueName, transactional);
         _createdQueues.Add(queueName);
-        return new MessageQueue(queueName);
+        return queue;
     }
 
-    /// <summary>
-    /// Verifies that a queue is empty
-    /// </summary>
     public bool IsQueueEmpty(string queueName)
     {
         using var queue = new MessageQueue(queueName);
         try
         {
-            var msg = queue.Peek(TimeSpan.Zero);
-            return msg == null;
+            using var message = queue.Peek(TimeSpan.Zero);
+            return false;
         }
-        catch
-        {
-            // Eccezione indica coda vuota
-            return true;
-        }
+        catch (MessageQueueException error) when (error.MessageQueueErrorCode == MessageQueueErrorCode.IOTimeout)
+        { return true; }
     }
 
-    /// <summary>
-    /// Pulisce tutte i messaggi da una coda
-    /// </summary>
     public void PurgeQueue(string queueName)
     {
         using var queue = new MessageQueue(queueName);
-        try
-        {
-            while (true)
-            {
-                var msg = queue.Receive(TimeSpan.Zero);
-                msg?.Dispose();
-            }
-        }
-        catch
-        {
-            // Fine messaggi
-        }
+        queue.Purge();
     }
 }

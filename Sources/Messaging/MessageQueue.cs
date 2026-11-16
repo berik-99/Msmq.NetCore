@@ -1,3 +1,5 @@
+﻿// CAS APIs are retained for source compatibility; Windows ACLs enforce MSMQ access.
+#pragma warning disable SYSLIB0003
 using Msmq.NetCore.Messaging.Design;
 using Msmq.NetCore.Messaging.Interop;
 using System.Collections;
@@ -444,7 +446,7 @@ public class MessageQueue : Component, IEnumerable
 
                     if (pathUpper.StartsWith(PREFIX_FORMAT_NAME))
                     {
-                        formatName = path[PREFIX_FORMAT_NAME.Length..];
+                        formatName = path.Substring(PREFIX_FORMAT_NAME.Length);
                     }
                     else if (pathUpper.StartsWith(PREFIX_LABEL))
                     {
@@ -577,7 +579,7 @@ public class MessageQueue : Component, IEnumerable
             {
                 return queuePath;
             }
-            return queuePath[..queuePath.IndexOf('\\')];
+            return queuePath.Substring(0, queuePath.IndexOf('\\'));
         }
 
         set
@@ -817,7 +819,7 @@ public class MessageQueue : Component, IEnumerable
             {
                 return queuePath;
             }
-            return queuePath[(queuePath.IndexOf('\\') + 1)..];
+            return queuePath.Substring(queuePath.IndexOf('\\') + 1);
         }
 
         set
@@ -1909,7 +1911,7 @@ public class MessageQueue : Component, IEnumerable
                                                     MessageReadPropertyFilter, null, MessageQueueTransactionType.None);
                 }
             }
-            catch (MessageQueueException)
+            catch (MessageQueueException e) when (e.MessageQueueErrorCode == MessageQueueErrorCode.IOTimeout)
             {
                 // don't do anything, just use this catch as convenient means to exit the search
             }
@@ -2090,6 +2092,7 @@ public class MessageQueue : Component, IEnumerable
             lockedReceiveMessage = receiveMessage.Lock();
         }
 
+        bool messageLocked = receiveMessage != null;
         try
         {
             if (internalTransaction != null && receive)
@@ -2104,19 +2107,22 @@ public class MessageQueue : Component, IEnumerable
                 while (IsMemoryError(status))
                 {
                     receiveMessage.Unlock();
+                    messageLocked = false;
                     receiveMessage.AdjustMemory();
                     lockedReceiveMessage = receiveMessage.Lock();
+                    messageLocked = true;
                     if (internalTransaction != null && receive)
                         status = StaleSafeReceiveByLookupId(lookupId, action, lockedReceiveMessage, null, null, internalTransaction.InnerTransaction);
                     else
                         status = StaleSafeReceiveByLookupId(lookupId, action, lockedReceiveMessage, null, null, (IntPtr)transactionType);
                 }
 
-                receiveMessage.Unlock();
             }
         }
         finally
         {
+            if (messageLocked)
+                receiveMessage.Unlock();
             if (internalTransaction != null && receive)
                 internalTransaction.EndQueueOperation();
         }
@@ -2343,17 +2349,17 @@ public class MessageQueue : Component, IEnumerable
 
     private static MessageQueue ResolveQueueFromLabel(string path, bool throwException)
     {
-        MessageQueue[] queues = GetPublicQueuesByLabel(path[PREFIX_LABEL.Length..], false);
+        MessageQueue[] queues = GetPublicQueuesByLabel(path.Substring(PREFIX_LABEL.Length), false);
         if (queues.Length == 0)
         {
             if (throwException)
-                throw new InvalidOperationException(Res.GetString(Res.InvalidLabel, path[PREFIX_LABEL.Length..]));
+                throw new InvalidOperationException(Res.GetString(Res.InvalidLabel, path.Substring(PREFIX_LABEL.Length)));
 
             return null;
         }
         else if (queues.Length > 1)
         {
-            throw new InvalidOperationException(Res.GetString(Res.AmbiguousLabel, path[PREFIX_LABEL.Length..]));
+            throw new InvalidOperationException(Res.GetString(Res.AmbiguousLabel, path.Substring(PREFIX_LABEL.Length)));
         }
 
         return queues[0];
@@ -2361,9 +2367,9 @@ public class MessageQueue : Component, IEnumerable
 
     private static string ResolveFormatNameFromQueuePath(string queuePath, bool throwException)
     {
-        string machine = queuePath[..queuePath.IndexOf('\\')];
+        string machine = queuePath.Substring(0, queuePath.IndexOf('\\'));
         //The name includes the \\
-        string name = queuePath[queuePath.IndexOf('\\')..];
+        string name = queuePath.Substring(queuePath.IndexOf('\\'));
         //Check for machine DeadLetter or Journal
         if (string.Compare(name, SUFIX_DEADLETTER, true, CultureInfo.InvariantCulture) == 0 ||
             string.Compare(name, SUFIX_DEADXACT, true, CultureInfo.InvariantCulture) == 0 ||
@@ -2400,7 +2406,7 @@ public class MessageQueue : Component, IEnumerable
             {
                 journal = true;
                 int lastIndex = realPath.LastIndexOf('\\');
-                realPath = realPath[..lastIndex];
+                realPath = realPath.Substring(0, lastIndex);
             }
 
             int result;
@@ -3112,7 +3118,7 @@ public class MessageQueue : Component, IEnumerable
 
                     if (entry == null)
                     {
-                        entry = new CacheEntry<Value>();
+                        entry = new CacheEntry<Value> { timeStamp = DateTime.UtcNow, contents = val };
                         table[key] = entry;
                         if (table.Count >= capacity)
                         {
@@ -3147,7 +3153,7 @@ public class MessageQueue : Component, IEnumerable
             DateTime now = DateTime.UtcNow;
             Dictionary<Key, CacheEntry<Value>> newTable = [];
 
-            rwLock.AcquireReaderLock(-1);
+            rwLock.AcquireWriterLock(-1);
             try
             {
                 foreach (KeyValuePair<Key, CacheEntry<Value>> kv in table)
@@ -3155,22 +3161,19 @@ public class MessageQueue : Component, IEnumerable
                     CacheEntry<Value> iterEntry = kv.Value;
 
                     // see if this entry is stale (ticks are 100 nano-sec.)
-                    if (now - iterEntry.timeStamp < staleAge)
+                    if (iterEntry != null && now - iterEntry.timeStamp < staleAge)
                     {
                         newTable[kv.Key] = kv.Value;
                     }
                 }
+                table = newTable;
+                capacity = 2 * table.Count;
+                if (capacity < originalCapacity) capacity = originalCapacity;
             }
             finally
             {
-                rwLock.ReleaseReaderLock();
+                rwLock.ReleaseWriterLock();
             }
-
-            rwLock.AcquireWriterLock(-1);
-            table = newTable;
-            capacity = 2 * table.Count;
-            if (capacity < originalCapacity) capacity = originalCapacity;
-            rwLock.ReleaseWriterLock();
         }
 
         private class CacheEntry<T>

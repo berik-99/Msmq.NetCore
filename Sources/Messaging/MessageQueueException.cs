@@ -16,6 +16,9 @@ public class MessageQueueException : ExternalException, ISerializable
 
 	internal MessageQueueException(int error) => nativeErrorCode = error;
 
+#if NET8_0_OR_GREATER
+	[Obsolete("Formatter-based exception serialization is retained for compatibility only.")]
+#endif
 	protected MessageQueueException(SerializationInfo info, StreamingContext context)
 		: base(info, context) => nativeErrorCode = info.GetInt32("NativeErrorCode");
 
@@ -66,6 +69,9 @@ public class MessageQueueException : ExternalException, ISerializable
 	}
 
 	[SecurityCritical]
+#if NET8_0_OR_GREATER
+	[Obsolete("Formatter-based exception serialization is retained for compatibility only.")]
+#endif
 	public override void GetObjectData(SerializationInfo info, StreamingContext context)
 	{
 		if (info == null)

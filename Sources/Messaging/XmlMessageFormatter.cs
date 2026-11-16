@@ -44,6 +44,8 @@ public class XmlMessageFormatter : IMessageFormatter
 				throw new ArgumentNullException(nameof(value));
 
 			typeNamesAdded = false;
+			typesAdded = false;
+			targetSerializerTable.Clear();
 			targetTypeNames = value;
 		}
 	}
@@ -59,6 +61,8 @@ public class XmlMessageFormatter : IMessageFormatter
 				throw new ArgumentNullException(nameof(value));
 
 			typesAdded = false;
+			typeNamesAdded = false;
+			targetSerializerTable.Clear();
 			targetTypes = value;
 		}
 	}

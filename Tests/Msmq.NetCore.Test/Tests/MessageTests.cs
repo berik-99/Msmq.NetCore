@@ -95,19 +95,17 @@ public class MessageTests
     }
 
     [Fact]
-    public void MessageTest_IdGeneratedAutomatically()
+    public void MessageTest_IdIsEmptyBeforeSend()
     {
         using var msg = new Message("Test Body");
-        Assert.NotNull(msg.Id);
-        Assert.NotEmpty(msg.Id);
+        Assert.Equal("00000000-0000-0000-0000-000000000000\\0", msg.Id);
     }
 
     [Fact]
-    public void MessageTest_SentTimeSet()
+    public void MessageTest_SentTimeIsUnavailableBeforeSend()
     {
         using var msg = new Message("Test Body");
-        // SentTime viene impostato al momento dell'invio, qui prendiamo un'approssimazione
-        Assert.NotNull(msg);
+        Assert.Throws<InvalidOperationException>(() => msg.SentTime);
     }
 
     [Fact]
@@ -152,7 +150,7 @@ public class MessageTests
     public void MessageTest_WrongFormatterType()
     {
         var xmlBody = new XElement("Root", new XElement("Item", "value"));
-        using var msg = new Message(xmlBody, new BinaryMessageFormatter());
+        using var msg = new Message(xmlBody, new XmlMessageFormatter());
         Assert.NotNull(msg);
         // The formatter will be used at deserialization time
     }
@@ -160,7 +158,7 @@ public class MessageTests
     [Fact]
     public void MessageTest_NullBody()
     {
-        using var msg = new Message(null);
+        using var msg = new Message((object)null);
         Assert.NotNull(msg);
         // Null body is valid in MSMQ
     }
@@ -169,7 +167,7 @@ public class MessageTests
     public void MessageTest_ObjectBody()
     {
         var person = TestCommon.CreateTestPerson();
-        using var msg = new Message(person, new BinaryMessageFormatter());
+        using var msg = new Message(person, new XmlMessageFormatter());
         Assert.NotNull(msg);
         Assert.IsType<Message>(msg);
     }

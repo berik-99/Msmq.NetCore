@@ -1,65 +1,128 @@
 # Msmq.NetCore
 
-[![NuGet](https://img.shields.io/nuget/v/Msmq.NetCore.svg)](https://www.nuget.org/packages/Msmq.NetCore)
+Msmq.NetCore provides MSMQ access for .NET Core and modern .NET on Windows. It is a port of the System.Messaging API, forked from MSMQ.Messaging.
 
-**Msmq.NetCore** is a drop-in replacement for `System.Messaging` on .NET Core, providing access to the features of MSMQ on the latest .NET Core runtime. This library is a fork of the original `MSMQ.Messaging` project and has been updated to support .NET Standard 2.1.
+**For .NET Framework applications, use Microsoft's official `System.Messaging` assembly.** This package focuses on .NET Core and modern .NET.
 
-> **Note**: This project is intended for use with .NET Core only. For .NET Framework users, it is recommended to continue using `System.Messaging`.
+## Release 1.2.0
 
-## Features
+This release adds a dedicated .NET 11 target, restores the .NET Standard 2.1 fallback for .NET Core 3.0 and later, and includes external IntelliSense XML documentation for every target. It fixes message buffer corruption, direct ActiveX Write/Send, partial stream reads, pinned buffer leaks, formatter state, and connection cache cleanup.
 
-- **MSMQ Support**: Provides an interface for working with Microsoft Message Queuing (MSMQ) on .NET Core.
-- **Fork of MSMQ.Messaging**: Built on the foundation of the original project, updated for modern .NET technologies.
-- **Simple Integration**: Drop-in replacement for the legacy `System.Messaging` namespace, making it easy to migrate to .NET Core.
+When upgrading from 1.1.x or earlier, review the [differences from System.Messaging](#differences-from-systemmessaging): ActiveX `VT_I1` now returns `sbyte`, and changing XML target types clears cached serializers. Applications using `BinaryMessageFormatter` must explicitly enable binary serialization; on .NET 9+, they must also reference the compatibility package described [below](#binary-compatibility). The library no longer provides that package or enables binary serialization on behalf of the application.
 
-## Usage
+## Compatibility
 
-### Basic Example
+| Application runtime | Library asset |
+| --- | --- |
+| .NET Core 3.0, 3.1 | `netstandard2.1` |
+| .NET 5, 6, 7 | `netstandard2.1` |
+| .NET 8, 9, 10, 11 | Dedicated target for each version |
+| .NET Framework | Incompatible with this package; use `System.Messaging` |
 
-To start using `Msmq.NetCore`, you can replace `System.Messaging` with `Msmq.NetCore` in your project. Here's an example of how to send and receive messages:
+MSMQ must be installed and running on Windows. .NET Core 1.x and 2.x are not supported. The .NET Standard 2.1 fallback excludes .NET Framework from NuGet compatibility. Compatibility with an older runtime does not extend that runtime's Microsoft support lifecycle. Distributed transactions depend on the capabilities of the application runtime and Windows/MSDTC; they are not guaranteed by the .NET Standard target.
 
+## Differences from System.Messaging
+
+The main namespace is `Msmq.NetCore.Messaging`. The port keeps the public signatures, parameter names, and constants of the corresponding System.Messaging types. Compatibility is not a promise of identical behavior in every framework feature or deployment mode.
+
+| Area | System.Messaging on .NET Framework | This port |
+| --- | --- | --- |
+| ActiveX `VT_I1` containing `FF` | `Read` returns `byte` 255 | `Read` returns `sbyte` -1, preserving the signed variant |
+| Replacing XML `TargetTypes` / `TargetTypeNames` after first use | Previously cached serializers remain | Previous serializers are discarded and rebuilt from the current settings |
+| Truncated ActiveX primitive streams | May produce incomplete values | Throws `EndOfStreamException`; partial reads are completed before decoding |
+| Code Access Security | Framework security API | Types retained for compatibility; Windows queue ACLs enforce access |
+| BinaryFormatter | Framework implementation | Obsolete, explicit application opt-in; compatibility package required on .NET 9+ |
+| Installer and design tools | `MessageQueueInstaller`, `Design.QueuePathDialog`, `Design.QueuePathEditor` | Not provided; create/configure queues through the runtime API or Windows administration tools |
+
+Calling `ActiveXMessageFormatter.Write(message, value)` directly before `queue.Send(message)` preserves the serialized ActiveX body. It does not require setting `message.Formatter` and does not silently convert the payload to XML.
+
+The signed-byte and XML-cache differences are intentional corrections. Existing callers that cast `VT_I1` to `byte`, or rely on serializers retained after changing target types, must adapt their code. XML target settings are serializer configuration, not a security boundary for untrusted input.
+
+## Installation
+
+Install the [Msmq.NetCore NuGet package](https://www.nuget.org/packages/Msmq.NetCore):
+
+```powershell
+dotnet add package Msmq.NetCore
 ```
-using Msmq.NetCore;
 
-var queuePath = @".\Private$\MyQueue";
+The namespace is `Msmq.NetCore.Messaging`. When migrating a .NET Framework application to .NET Core or modern .NET, replace its `System.Messaging` reference and using directive with this package and namespace.
 
-// Create the queue if it doesn't exist
-if (!MessageQueue.Exists(queuePath))
+## Example
+
+```csharp
+using System;
+using Msmq.NetCore.Messaging;
+
+string path = @".\private$\my-queue";
+if (!MessageQueue.Exists(path))
 {
-    MessageQueue.Create(queuePath);
+    using (var created = MessageQueue.Create(path)) { }
 }
 
-// Sending a message
-using (var queue = new MessageQueue(queuePath))
+using (var queue = new MessageQueue(path))
 {
-    var message = new Message("Hello, MSMQ!");
-    queue.Send(message);
-}
-
-// Receiving a message
-using (var queue = new MessageQueue(queuePath))
-{
-    queue.Formatter = new XmlMessageFormatter(new string[] { "System.String" });
-    var receivedMessage = queue.Receive();
-    Console.WriteLine($"Received message: {receivedMessage.Body}");
+    queue.Formatter = new XmlMessageFormatter(new[] { typeof(string) });
+    queue.Send("Hello, MSMQ!");
+    using (var received = queue.Receive(TimeSpan.FromSeconds(5)))
+        Console.WriteLine(received.Body);
 }
 ```
 
-### Compatibility
+The queue in this example is nontransactional. Use an explicit `MessageQueueTransaction` or `MessageQueueTransactionType.Single` when sending to or receiving from a transactional queue.
 
-- **Target Framework**: .NET Standard 2.1 (only for .NET Core).
-- **Platform**: Windows (MSMQ is platform-specific).
+## Binary compatibility
 
-## Contributing
+XML is the default formatter. `ActiveXMessageFormatter` supports the existing MSMQ primitive formats. `BinaryMessageFormatter` remains available and obsolete for legacy message compatibility.
 
-Contributions are welcome! If you'd like to contribute to `Msmq.NetCore`, please fork the repository and submit a pull request. 
+BinaryFormatter has security vulnerabilities. Never deserialize binary messages from untrusted senders. From .NET 9 onward, an application that explicitly needs binary compatibility must reference the unsupported compatibility package and enable serialization **in the executable project**, not just in a library:
 
-We ask that you respect the project's goal of staying as close as possible to the reference implementation of MSMQ, with the aim of providing a simple migration path to .NET Core.
+```xml
+<PropertyGroup>
+  <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
+</PropertyGroup>
+<ItemGroup>
+  <!-- Version shown for an application targeting .NET 11. -->
+  <PackageReference Include="System.Runtime.Serialization.Formatters" Version="11.0.0" />
+</ItemGroup>
+```
 
-## Acknowledgments
+See Microsoft's [BinaryFormatter compatibility guidance](https://learn.microsoft.com/dotnet/standard/serialization/binaryformatter-migration-guide/compatibility-package). The library does not enable this application setting automatically. The legacy Code Access Security types are retained for API compatibility; Windows queue ACLs enforce access.
 
-This project is a **fork** of [MSMQ.Messaging](https://github.com/weloytty/MSMQ.Messaging), created by Bill Loytty. We would like to thank him for laying the groundwork for this project.
+## Build and test
 
-## License
+Building the complete solution requires the .NET 11 SDK. Integration tests require Windows, MSMQ, and permission to create/delete local private queues.
 
-This project is licensed under the [MIT License](../LICENSE).
+```powershell
+dotnet build Msmq.NetCore.sln -c Release
+dotnet test --project Tests/Msmq.NetCore.Test/Msmq.NetCore.Test.csproj
+```
+
+The tests target .NET 8 through 11 and use xUnit v3 and Microsoft.Testing.Platform, selected in `global.json`. Each test instance owns unique private queues. Binary compatibility is explicitly enabled only in the test executable.
+
+The console project runs XML, ActiveX, asynchronous receive, and transaction checks on the selected installed runtime. For example:
+
+```powershell
+dotnet run --project Tests/Msmq.NetCore.CosnoleTest -f netcoreapp3.1
+dotnet run --project Tests/Msmq.NetCore.CosnoleTest -f net11.0
+```
+
+Its targets cover .NET Core 3.1 and .NET 5 through 11. Running a target requires that runtime to be installed; a successful build alone does not certify every runtime or deployment mode.
+
+To create the NuGet package:
+
+```powershell
+dotnet pack Sources/Msmq.NetCore.csproj -c Release
+```
+
+## External API documentation
+
+IntelliSense documentation is supplied in `Msmq.NetCore.xml`, beside each DLL in the build output and each `lib/<framework>/` folder of the NuGet package. No source-code documentation comments or .NET Framework installation are required to build or consume it.
+
+The checked-in file contains 666 entries adapted from Microsoft's API documentation, with namespace mappings and notes for this port's platform requirements and behavioral differences. Automated tests verify the member IDs, summaries, and output copy against the actual public API.
+
+The source snapshot, attribution, transformation details, and regeneration command are recorded in `Sources/Documentation/ThirdPartyNotices.txt`. Regeneration uses `python tools/update_api_docs.py` and requires network access; normal builds use the checked-in XML offline.
+
+## Acknowledgments and license
+
+Based on [MSMQ.Messaging](https://github.com/weloytty/MSMQ.Messaging), by Bill Loytty, and the original System.Messaging implementation. Library source code is licensed under MIT; see LICENSE. The bundled Microsoft-derived API documentation is licensed under CC BY 4.0; see ThirdPartyNotices.txt and LICENSE-API-DOCS.txt in the package. NuGet metadata identifies both licenses as `MIT AND CC-BY-4.0`.
